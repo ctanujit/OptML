@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Introduction to Optimization (MATH-224) - Convex Analysis</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+:root{
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --accent:#1d4ed8;
+  --accent-soft:#eff6ff;
+  --green:#166534;
+  --green-soft:#f0fdf4;
+  --amber:#92400e;
+  --amber-soft:#fffbeb;
+  --red:#991b1b;
+  --red-soft:#fef2f2;
+  --purple:#6b21a8;
+  --purple-soft:#faf5ff;
+  --border:#d1d5db;
+  --bg:#ffffff;
+  --panel:#f9fafb;
+  --blue:#006b7d;
+  --lecture:#9b2c14;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Segoe UI",Arial,Helvetica,sans-serif;
+  line-height:1.68;
+}
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:42px 30px 72px;
+}
+.lecture-header{
+  margin-bottom:30px;
+  padding-bottom:18px;
+  border-bottom:3px solid var(--accent);
+}
+.lecture-header h1{
+  margin:0;
+  color:#111827;
+  font-size:2.28rem;
+  line-height:1.2;
+  font-weight:700;
+}
+.lecture-header .subtitle{
+  margin-top:8px;
+  color:#374151;
+  font-size:1.22rem;
+}
+.lecture-header .byline{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:1.06rem;
+}
+h2{
+  font-size:1.58rem;
+  line-height:1.25;
+  color:#111827;
+  margin-top:2.0em;
+  border-left:5px solid var(--accent);
+  padding-left:12px;
+}
+h3{
+  font-size:1.22rem;
+  color:#111827;
+  margin-top:1.55em;
+}
+h4{
+  font-size:1.05rem;
+  color:#111827;
+  margin-top:1.35em;
+}
+p{margin:.68em 0;}
+ul,ol{padding-left:1.45rem;}
+li{margin:.35em 0;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+
+.toc{
+  border:1px solid var(--border);
+  background:#fbfdff;
+  border-radius:14px;
+  padding:18px 22px;
+  margin:22px 0 28px;
+}
+.toc h3{margin-top:0;}
+.toc-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px 34px;
+}
+.callout{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px 18px;
+  margin:18px 0;
+  background:var(--panel);
+}
+.key{background:var(--accent-soft);border-color:#bfdbfe;}
+.good{background:var(--green-soft);border-color:#bbf7d0;}
+.warn{background:var(--amber-soft);border-color:#fde68a;}
+.danger{background:var(--red-soft);border-color:#fecaca;}
+.note{background:#eef6ff;border-color:#c9dcfb;}
+.purple{background:var(--purple-soft);border-color:#e9d5ff;}
+.label{
+  font-weight:700;
+  margin-bottom:6px;
+}
+.theorem{
+  border-left:5px solid var(--purple);
+  background:var(--purple-soft);
+  border-radius:8px;
+  padding:15px 18px;
+  margin:19px 0;
+}
+.proposition{
+  border-left:5px solid var(--green);
+  background:var(--green-soft);
+  border-radius:8px;
+  padding:15px 18px;
+  margin:19px 0;
+}
+.definition{
+  border-left:5px solid var(--accent);
+  background:var(--accent-soft);
+  border-radius:8px;
+  padding:15px 18px;
+  margin:19px 0;
+}
+.example{
+  border-left:5px solid var(--lecture);
+  background:#fffaf7;
+  border-radius:8px;
+  padding:15px 18px;
+  margin:19px 0;
+}
+.exercise{
+  border:1px dashed #f59e0b;
+  background:#fffdf5;
+  border-radius:10px;
+  padding:15px 18px;
+  margin:19px 0;
+}
+.math-result{
+  background:var(--panel);
+  padding:14px 18px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  margin:16px 0;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:18px 0;
+  font-size:.98rem;
+}
+th,td{
+  border:1px solid var(--border);
+  padding:10px 12px;
+  text-align:left;
+  vertical-align:top;
+}
+th{background:#f3f4f6;font-weight:700;}
+.small{color:var(--muted);font-size:.93rem;}
+.figure-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  margin:24px 0 10px;
+  align-items:start;
+}
+.figure-card{
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:white;
+  padding:14px;
+}
+.figure-card > svg{width:100%;height:auto;display:block;}
+.caption{
+  color:var(--blue);
+  font-size:1.0rem;
+  margin-top:8px;
+}
+.step{
+  border-left:3px solid #cbd5e1;
+  padding-left:16px;
+  margin:14px 0;
+}
+.summary{
+  border:2px solid #bfdbfe;
+  background:#f8fbff;
+  border-radius:14px;
+  padding:20px;
+  margin-top:34px;
+}
+hr.section{
+  border:0;
+  border-top:2px solid #e5e7eb;
+  margin:48px 0 16px;
+}
+.kbd{
+  display:inline-block;
+  padding:1px 6px;
+  border:1px solid #d1d5db;
+  border-bottom-width:2px;
+  border-radius:5px;
+  background:#f9fafb;
+  font-family:Consolas,monospace;
+  font-size:.9em;
+}
+
+/* Keep mathematical notation visually consistent with the lecture text. */
+mjx-container[jax="SVG"] {
+  font-size:0.98em !important;
+}
+mjx-container[jax="SVG"][display="true"] {
+  font-size:0.96em !important;
+  margin:0.78em 0 !important;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+mjx-container[jax="SVG"] svg {
+  max-width:100%;
+}
+.math-small mjx-container[jax="SVG"][display="true"] {
+  font-size:0.89em !important;
+}
+.math-tight mjx-container[jax="SVG"][display="true"] {
+  margin:0.45em 0 !important;
+}
+
+@media(max-width:800px){
+  .figure-grid,.toc-grid{grid-template-columns:1fr;}
+  .wrap{padding:24px 16px 50px;}
+  .lecture-header h1{font-size:1.8rem;}
+}
+@media print{
+  .wrap{max-width:none;padding:15mm;}
+  h2{page-break-after:avoid;}
+  table,.callout,.theorem,.proposition,.definition,.example,.math-result,.figure-card{page-break-inside:avoid;}
+  .toc a{color:inherit;text-decoration:none;}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="lecture-header">
+  <h1>Introduction to Optimization (MATH-224) - Lecture 4</h1>
+  <div class="subtitle">Convex Analysis for Optimization: Convex Sets and Convex Functions</div>
+  <div class="byline">by Tanujit Chakraborty</div>
+</header>
+
+<div class="callout key">
+  <div class="label">Big picture</div>
+  Convex analysis gives us a geometric language for optimization. The central idea is simple:
+  if we take two feasible points and move along the straight line segment joining them, do we remain feasible?
+  From this one idea come convex sets, norm balls, polyhedra, convex hulls,
+  cones, and the definition of a convex function.
+</div>
+
+<h2 id="convex-combinations">1. Convex Combinations and Convex Sets</h2>
+
+<div class="definition">
+  <div class="label">Definition 1 — Convex combination</div>
+  Given points \(\mathbf{x}_1,\ldots,\mathbf{x}_k\in\mathbb{R}^n\), a point
+  \[
+    \mathbf{z}=\lambda_1\mathbf{x}_1+\cdots+\lambda_k\mathbf{x}_k
+  \]
+  is called a <strong>convex combination</strong> if
+  \[
+    \lambda_i\ge 0\quad\text{for all }i,
+    \qquad
+    \sum_{i=1}^{k}\lambda_i=1.
+  \]
+</div>
+
+<p>The coefficients \(\lambda_i\) can be interpreted as nonnegative weights that add up to one.</p>
+
+<h3>Two-point form</h3>
+
+<p>For two points \(\mathbf{x},\mathbf{y}\), write</p>
+
+\[
+\mathbf{z}
+=
+\lambda_1\mathbf{x}+\lambda_2\mathbf{y},
+\qquad
+\lambda_1+\lambda_2=1.
+\]
+
+<p>Set \(\lambda=\lambda_1\). Then \(\lambda_2=1-\lambda\). Since both coefficients are nonnegative,</p>
+
+\[
+\lambda\ge0,
+\qquad
+1-\lambda\ge0,
+\]
+
+<p>and therefore</p>
+
+\[
+\boxed{0\le\lambda\le1.}
+\]
+
+<p>Hence every convex combination of two points has the form</p>
+
+<div class="math-result">
+\[
+\boxed{
+\mathbf{z}
+=
+\lambda\mathbf{x}+(1-\lambda)\mathbf{y},
+\qquad
+\lambda\in[0,1].
+}
+\]
+</div>
+
+<div class="callout good">
+  <div class="label">Geometric interpretation</div>
+  As \(\lambda\) varies from \(0\) to \(1\), the point
+  \(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\) traces the line segment joining
+  \(\mathbf{y}\) and \(\mathbf{x}\).
+</div>
+
+<div class="figure-grid">
+  <div class="figure-card">
+    <svg viewBox="0 0 440 280" aria-label="convex combination of two points">
+      <defs>
+        <marker id="arr1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 z" fill="#111827"/>
+        </marker>
+      </defs>
+      <line x1="55" y1="235" x2="405" y2="235" stroke="#111827" stroke-width="2" marker-end="url(#arr1)"/>
+      <line x1="75" y1="255" x2="75" y2="25" stroke="#111827" stroke-width="2" marker-end="url(#arr1)"/>
+      <line x1="115" y1="195" x2="345" y2="75" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="115" cy="195" r="7" fill="#991b1b"/>
+      <circle cx="345" cy="75" r="7" fill="#991b1b"/>
+      <circle cx="230" cy="135" r="6" fill="#166534"/>
+      <text x="96" y="220" font-size="18">y</text>
+      <text x="356" y="72" font-size="18">x</text>
+      <text x="239" y="128" font-size="18">z</text>
+    </svg>
+    <div class="caption">All two-point convex combinations lie on the segment between the points.</div>
+  </div>
+  <div class="figure-card">
+    <svg viewBox="0 0 440 280" aria-label="example between (1,0) and (0,1)">
+      <line x1="55" y1="235" x2="405" y2="235" stroke="#111827" stroke-width="2"/>
+      <line x1="80" y1="255" x2="80" y2="25" stroke="#111827" stroke-width="2"/>
+      <line x1="80" y1="65" x2="330" y2="235" stroke="#1d4ed8" stroke-width="4"/>
+      <circle cx="80" cy="65" r="7" fill="#991b1b"/>
+      <circle cx="330" cy="235" r="7" fill="#991b1b"/>
+      <circle cx="205" cy="150" r="6" fill="#166534"/>
+      <text x="40" y="55" font-size="17">(0,1)</text>
+      <text x="315" y="260" font-size="17">(1,0)</text>
+      <text x="215" y="145" font-size="17">z</text>
+    </svg>
+    <div class="caption">
+      If \(\mathbf{x}=(1,0)^\top\) and \(\mathbf{y}=(0,1)^\top\), then
+      \(\mathbf{z}=(\lambda,1-\lambda)^\top\).
+    </div>
+  </div>
+</div>
+
+<div class="definition">
+  <div class="label">Definition 2 — Convex set</div>
+  A set \(X\subseteq\mathbb{R}^n\) is <strong>convex</strong> if, for every
+  \(\mathbf{x},\mathbf{y}\in X\) and every \(\lambda\in[0,1]\),
+  \[
+  \boxed{
+    \lambda\mathbf{x}+(1-\lambda)\mathbf{y}\in X.
+  }
+  \]
+</div>
+
+<p>Equivalently, a convex set contains every line segment joining any two of its points.</p>
+
+<div class="callout warn">
+  <div class="label">Proof strategy</div>
+  To <strong>prove</strong> convexity, start with arbitrary \(\mathbf{x},\mathbf{y}\in X\) and arbitrary
+  \(\lambda\in[0,1]\), then verify that \(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\) still satisfies
+  the defining constraints of \(X\). To <strong>disprove</strong> convexity, one counterexample is enough.
+</div>
+
+<h3>Example 1: the first quadrant</h3>
+
+<p>Consider</p>
+
+\[
+X_1=
+\left\{
+\mathbf{x}\in\mathbb{R}^2:
+x_1\ge0,\;x_2\ge0
+\right\}.
+\]
+
+<p>Take arbitrary</p>
+
+\[
+\mathbf{x}=
+\begin{pmatrix}x_1\\x_2\end{pmatrix},
+\qquad
+\mathbf{y}=
+\begin{pmatrix}y_1\\y_2\end{pmatrix}
+\in X_1.
+\]
+
+<p>Then \(x_1,x_2,y_1,y_2\ge0\). For \(\lambda\in[0,1]\),</p>
+
+\[
+\mathbf{z}
+=
+\lambda\mathbf{x}+(1-\lambda)\mathbf{y}
+=
+\begin{pmatrix}
+\lambda x_1+(1-\lambda)y_1\\
+\lambda x_2+(1-\lambda)y_2
+\end{pmatrix}.
+\]
+
+<p>Every coefficient and every coordinate is nonnegative, so both coordinates of \(\mathbf{z}\) are nonnegative. Thus</p>
+
+\[
+\boxed{\mathbf{z}\in X_1},
+\]
+
+<p>and therefore \(X_1\) is convex.</p>
+
+<h3>Example 2: a nonconvex set</h3>
+
+<p>Consider</p>
+
+\[
+X_2=
+\left\{
+\mathbf{x}\in\mathbb{R}^2:
+x_1x_2\ge0
+\right\}.
+\]
+
+<p>This set consists of the first and third quadrants, including the axes. Choose</p>
+
+\[
+\mathbf{x}=
+\begin{pmatrix}2\\1\end{pmatrix},
+\qquad
+\mathbf{y}=
+\begin{pmatrix}-1\\-2\end{pmatrix}.
+\]
+
+<p>Both points belong to \(X_2\), but their midpoint is</p>
+
+\[
+\frac12\mathbf{x}+\frac12\mathbf{y}
+=
+\begin{pmatrix}
+1/2\\
+-1/2
+\end{pmatrix},
+\]
+
+<p>whose coordinate product is \(-1/4<0\). Hence the midpoint is not in \(X_2\), and</p>
+
+\[
+\boxed{X_2\text{ is not convex}.}
+\]
+
+<div class="figure-grid">
+  <div class="figure-card">
+    <svg viewBox="0 0 440 300" aria-label="convex first quadrant">
+      <defs>
+        <pattern id="bluehatch1" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="12" stroke="#93c5fd" stroke-width="5"/>
+        </pattern>
+      </defs>
+      <rect x="90" y="40" width="300" height="200" fill="url(#bluehatch1)"/>
+      <line x1="50" y1="240" x2="410" y2="240" stroke="#111827" stroke-width="2"/>
+      <line x1="90" y1="270" x2="90" y2="20" stroke="#111827" stroke-width="2"/>
+      <circle cx="150" cy="190" r="7" fill="#991b1b"/>
+      <circle cx="340" cy="80" r="7" fill="#991b1b"/>
+      <line x1="150" y1="190" x2="340" y2="80" stroke="#166534" stroke-width="4"/>
+      <text x="136" y="215" font-size="17">x</text>
+      <text x="350" y="78" font-size="17">y</text>
+    </svg>
+    <div class="caption">The first quadrant is convex.</div>
+  </div>
+  <div class="figure-card">
+    <svg viewBox="0 0 440 300" aria-label="nonconvex first and third quadrants">
+      <defs>
+        <pattern id="bluehatch2" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="12" stroke="#93c5fd" stroke-width="5"/>
+        </pattern>
+      </defs>
+      <rect x="220" y="30" width="170" height="120" fill="url(#bluehatch2)"/>
+      <rect x="50" y="150" width="170" height="120" fill="url(#bluehatch2)"/>
+      <line x1="35" y1="150" x2="410" y2="150" stroke="#111827" stroke-width="2"/>
+      <line x1="220" y1="285" x2="220" y2="15" stroke="#111827" stroke-width="2"/>
+      <circle cx="345" cy="70" r="7" fill="#166534"/>
+      <circle cx="125" cy="240" r="7" fill="#166534"/>
+      <line x1="345" y1="70" x2="125" y2="240" stroke="#991b1b" stroke-width="4"/>
+      <circle cx="235" cy="155" r="7" fill="#991b1b"/>
+      <text x="244" y="178" font-size="15">segment leaves the set</text>
+    </svg>
+    <div class="caption">A single line segment leaving the set is enough to show nonconvexity.</div>
+  </div>
+</div>
+
+<h2 id="linear-sets">2. Basic Convex Sets Defined by Linear Equalities and Inequalities</h2>
+
+<h3>2.1 Hyperplanes</h3>
+
+<div class="definition">
+  <div class="label">Hyperplane</div>
+  For \(\mathbf{a}\in\mathbb{R}^n\) and \(b\in\mathbb{R}\),
+  \[
+  H=\{\mathbf{x}\in\mathbb{R}^n:\mathbf{a}^\top\mathbf{x}=b\}.
+  \]
+  For a genuine hyperplane, one normally assumes \(\mathbf{a}\neq0\).
+</div>
+
+<div class="proposition">
+  <div class="label">Proposition — A hyperplane is convex</div>
+  Let \(\mathbf{x},\mathbf{y}\in H\). Then
+  \[
+  \mathbf{a}^\top\mathbf{x}=b,
+  \qquad
+  \mathbf{a}^\top\mathbf{y}=b.
+  \]
+  For \(\lambda\in[0,1]\), define
+  \[
+  \mathbf{z}=\lambda\mathbf{x}+(1-\lambda)\mathbf{y}.
+  \]
+  Then
+  \[
+  \begin{aligned}
+  \mathbf{a}^\top\mathbf{z}
+  &=
+  \mathbf{a}^\top\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)\\
+  &=
+  \lambda\mathbf{a}^\top\mathbf{x}
+  +(1-\lambda)\mathbf{a}^\top\mathbf{y}\\
+  &=
+  \lambda b+(1-\lambda)b=b.
+  \end{aligned}
+  \]
+  Hence \(\mathbf{z}\in H\), so \(H\) is convex.
+</div>
+
+<h3>2.2 Halfspaces</h3>
+
+<div class="definition">
+  <div class="label">Halfspace</div>
+  A closed halfspace has the form
+  \[
+  H_-=\{\mathbf{x}\in\mathbb{R}^n:\mathbf{a}^\top\mathbf{x}\le b\}.
+  \]
+</div>
+
+<p>Take \(\mathbf{x},\mathbf{y}\in H_-\). Then</p>
+
+\[
+\mathbf{a}^\top\mathbf{x}\le b,
+\qquad
+\mathbf{a}^\top\mathbf{y}\le b.
+\]
+
+<p>For \(\mathbf{z}=\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\),</p>
+
+\[
+\begin{aligned}
+\mathbf{a}^\top\mathbf{z}
+&=
+\lambda\mathbf{a}^\top\mathbf{x}
++
+(1-\lambda)\mathbf{a}^\top\mathbf{y}\\
+&\le
+\lambda b+(1-\lambda)b\\
+&=b.
+\end{aligned}
+\]
+
+<p>Thus \(\mathbf{z}\in H_-\), so every halfspace is convex.</p>
+
+<div class="figure-card">
+  <svg viewBox="0 0 660 330" aria-label="halfspace">
+    <defs>
+      <pattern id="halfhat" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(55)">
+        <line x1="0" y1="0" x2="0" y2="14" stroke="#93c5fd" stroke-width="6"/>
+      </pattern>
+    </defs>
+    <polygon points="60,260 180,60 590,230 590,300 60,300" fill="url(#halfhat)"/>
+    <line x1="180" y1="60" x2="590" y2="230" stroke="#1d4ed8" stroke-width="4"/>
+    <line x1="60" y1="240" x2="610" y2="240" stroke="#111827" stroke-width="2"/>
+    <line x1="325" y1="300" x2="325" y2="30" stroke="#111827" stroke-width="2"/>
+    <circle cx="230" cy="210" r="7" fill="#166534"/>
+    <circle cx="465" cy="220" r="7" fill="#166534"/>
+    <line x1="230" y1="210" x2="465" y2="220" stroke="#991b1b" stroke-width="4"/>
+  </svg>
+  <div class="caption">Any segment joining two points in the same halfspace remains in the halfspace.</div>
+</div>
+
+<h3>2.3 A useful \(\ell_\infty\)-ball example</h3>
+
+<p>The set</p>
+
+\[
+B_\infty
+\left(
+\begin{pmatrix}1\\1\end{pmatrix},
+1
+\right)
+=
+\left\{
+\mathbf{x}\in\mathbb{R}^2:
+\max_{i=1,2}|x_i-1|\le1
+\right\}
+\]
+
+<p>is exactly the square</p>
+
+\[
+\boxed{[0,2]\times[0,2].}
+\]
+
+<p>For instance, \((2,1)\) belongs to the set because \(\max(|2-1|,|1-1|)=1\), while \((3,1)\) does not.</p>
+
+<h2 id="norm-balls">3. Sets Defined by Norms</h2>
+
+<div class="definition">
+  <div class="label">The \(p\)-norm</div>
+  For \(\mathbf{x}\in\mathbb{R}^n\),
+  \[
+  \|\mathbf{x}\|_p
+  =
+  \begin{cases}
+  \left(\displaystyle\sum_{i=1}^{n}|x_i|^p\right)^{1/p},
+  &1\le p<\infty,\\[1.2ex]
+  \displaystyle\max_{1\le i\le n}|x_i|,
+  &p=\infty.
+  \end{cases}
+  \]
+</div>
+
+<p>Two norm properties will be used repeatedly:</p>
+
+\[
+\boxed{
+\|\mathbf{u}+\mathbf{v}\|_p
+\le
+\|\mathbf{u}\|_p+\|\mathbf{v}\|_p
+}
+\qquad\text{(triangle inequality)}
+\]
+
+<p>and</p>
+
+\[
+\boxed{
+\|\alpha\mathbf{u}\|_p
+=
+|\alpha|\,\|\mathbf{u}\|_p
+}
+\qquad\text{(positive homogeneity).}
+\]
+
+<div class="definition">
+  <div class="label">Norm ball</div>
+  For center \(\mathbf{c}\in\mathbb{R}^n\) and radius \(R\ge0\),
+  \[
+  B_p(\mathbf{c},R)
+  =
+  \left\{
+  \mathbf{x}\in\mathbb{R}^n:
+  \|\mathbf{x}-\mathbf{c}\|_p\le R
+  \right\}.
+  \]
+</div>
+
+<div class="proposition">
+  <div class="label">Proposition 1 — Every norm ball is convex</div>
+  Let \(\mathbf{x},\mathbf{y}\in B_p(\mathbf{c},R)\) and \(\lambda\in[0,1]\).
+  Put
+  \[
+  \mathbf{z}=\lambda\mathbf{x}+(1-\lambda)\mathbf{y}.
+  \]
+  Then
+  \[
+  \begin{aligned}
+  \|\mathbf{z}-\mathbf{c}\|_p
+  &=
+  \left\|
+  \lambda(\mathbf{x}-\mathbf{c})
+  +(1-\lambda)(\mathbf{y}-\mathbf{c})
+  \right\|_p\\
+  &\le
+  \left\|\lambda(\mathbf{x}-\mathbf{c})\right\|_p
+  +
+  \left\|(1-\lambda)(\mathbf{y}-\mathbf{c})\right\|_p\\
+  &=
+  \lambda\|\mathbf{x}-\mathbf{c}\|_p
+  +(1-\lambda)\|\mathbf{y}-\mathbf{c}\|_p\\
+  &\le
+  \lambda R+(1-\lambda)R\\
+  &=R.
+  \end{aligned}
+  \]
+  Therefore \(\mathbf{z}\in B_p(\mathbf{c},R)\).
+</div>
+
+<div class="figure-grid">
+  <div class="figure-card">
+    <svg viewBox="0 0 430 280" aria-label="p norm balls">
+      <line x1="45" y1="140" x2="395" y2="140" stroke="#111827" stroke-width="2"/>
+      <line x1="220" y1="255" x2="220" y2="25" stroke="#111827" stroke-width="2"/>
+      <polygon points="220,55 340,140 220,225 100,140" fill="#eef6ff" stroke="#1d4ed8" stroke-width="3"/>
+      <circle cx="220" cy="140" r="80" fill="none" stroke="#166534" stroke-width="3"/>
+      <rect x="140" y="60" width="160" height="160" fill="none" stroke="#991b1b" stroke-width="3"/>
+    </svg>
+    <div class="caption">In \(\mathbb{R}^2\): \(\ell_1\)-ball (diamond), \(\ell_2\)-ball (circle), \(\ell_\infty\)-ball (square).</div>
+  </div>
+  <div class="figure-card">
+    <svg viewBox="0 0 430 280" aria-label="convexity of ball">
+      <circle cx="220" cy="140" r="100" fill="#eff6ff" stroke="#1d4ed8" stroke-width="3"/>
+      <circle cx="155" cy="175" r="7" fill="#991b1b"/>
+      <circle cx="295" cy="95" r="7" fill="#991b1b"/>
+      <line x1="155" y1="175" x2="295" y2="95" stroke="#166534" stroke-width="4"/>
+      <text x="137" y="200" font-size="17">x</text>
+      <text x="305" y="90" font-size="17">y</text>
+      <text x="208" y="127" font-size="16">segment</text>
+    </svg>
+    <div class="caption">The proof works for every norm because it uses only norm axioms.</div>
+  </div>
+</div>
+
+
+<h2 id="operations">4. Operations That Preserve Convexity of Sets</h2>
+
+<p>
+Once we know a few basic convex sets, we can build many new ones using operations
+that preserve convexity. For this course, the most useful operations are
+<strong>intersection</strong>, <strong>affine images</strong>, and
+<strong>inverse affine images</strong>.
+</p>
+
+<h3>4.1 Intersections</h3>
+
+<div class="proposition">
+  <div class="label">Proposition — Intersection</div>
+  If \(X_1,\ldots,X_m\) are convex sets, then
+  \[
+  \boxed{
+  \bigcap_{i=1}^{m}X_i
+  }
+  \]
+  is convex.
+</div>
+
+<p><strong>Proof.</strong> Let</p>
+
+\[
+\mathbf{z}_1,\mathbf{z}_2
+\in
+\bigcap_{i=1}^{m}X_i
+\]
+
+<p>and let \(\lambda\in[0,1]\). Then, for every \(i\),</p>
+
+\[
+\mathbf{z}_1,\mathbf{z}_2\in X_i.
+\]
+
+<p>Since \(X_i\) is convex,</p>
+
+\[
+\lambda\mathbf{z}_1+(1-\lambda)\mathbf{z}_2\in X_i
+\qquad
+\text{for every }i.
+\]
+
+<p>Therefore</p>
+
+\[
+\boxed{
+\lambda\mathbf{z}_1+(1-\lambda)\mathbf{z}_2
+\in
+\bigcap_{i=1}^{m}X_i.
+}
+\]
+
+<div class="example">
+  <div class="label">Important example — Polyhedra</div>
+  A polyhedron
+  \[
+  P=\{\mathbf{x}\in\mathbb{R}^n:A\mathbf{x}\le\mathbf{b}\}
+  \]
+  is an intersection of halfspaces. If the rows of \(A\) are
+  \(\mathbf{a}_1^\top,\ldots,\mathbf{a}_m^\top\), then
+  \[
+  P
+  =
+  \bigcap_{i=1}^{m}
+  \{\mathbf{x}:\mathbf{a}_i^\top\mathbf{x}\le b_i\}.
+  \]
+  Since every halfspace is convex, every polyhedron is convex.
+</div>
+
+<h3>4.2 Affine images</h3>
+
+<div class="proposition">
+  <div class="label">Proposition — Affine image</div>
+  Let \(X\subseteq\mathbb{R}^n\) be convex and
+  \[
+  f(\mathbf{x})=A\mathbf{x}+\mathbf{b}.
+  \]
+  Then
+  \[
+  f(X)=\{A\mathbf{x}+\mathbf{b}:\mathbf{x}\in X\}
+  \]
+  is convex.
+</div>
+
+<p><strong>Proof.</strong> Let \(\mathbf{y}_1,\mathbf{y}_2\in f(X)\). Then there exist
+\(\mathbf{x}_1,\mathbf{x}_2\in X\) such that</p>
+
+\[
+\mathbf{y}_1=A\mathbf{x}_1+\mathbf{b},
+\qquad
+\mathbf{y}_2=A\mathbf{x}_2+\mathbf{b}.
+\]
+
+<p>For \(\lambda\in[0,1]\), convexity of \(X\) gives</p>
+
+\[
+\bar{\mathbf{x}}
+=
+\lambda\mathbf{x}_1+(1-\lambda)\mathbf{x}_2
+\in X.
+\]
+
+<p>Moreover,</p>
+
+\[
+\begin{aligned}
+A\bar{\mathbf{x}}+\mathbf{b}
+&=
+A\bigl(\lambda\mathbf{x}_1+(1-\lambda)\mathbf{x}_2\bigr)+\mathbf{b}\\
+&=
+\lambda(A\mathbf{x}_1+\mathbf{b})
++
+(1-\lambda)(A\mathbf{x}_2+\mathbf{b})\\
+&=
+\lambda\mathbf{y}_1+(1-\lambda)\mathbf{y}_2.
+\end{aligned}
+\]
+
+<p>Hence the convex combination belongs to \(f(X)\).</p>
+
+<h3>4.3 Inverse affine images</h3>
+
+<div class="proposition">
+  <div class="label">Proposition — Inverse affine image</div>
+  Let \(X\subseteq\mathbb{R}^n\) be convex and define
+  \[
+  \mathcal{A}(\mathbf{y})=A\mathbf{y}+\mathbf{b}.
+  \]
+  Then
+  \[
+  \mathcal{A}^{-1}(X)
+  =
+  \{\mathbf{y}:A\mathbf{y}+\mathbf{b}\in X\}
+  \]
+  is convex.
+</div>
+
+<p><strong>Proof.</strong> If \(\mathbf{y}_1,\mathbf{y}_2\in\mathcal{A}^{-1}(X)\), then</p>
+
+\[
+A\mathbf{y}_1+\mathbf{b}\in X,
+\qquad
+A\mathbf{y}_2+\mathbf{b}\in X.
+\]
+
+<p>For \(\bar{\mathbf{y}}=\lambda\mathbf{y}_1+(1-\lambda)\mathbf{y}_2\),</p>
+
+\[
+A\bar{\mathbf{y}}+\mathbf{b}
+=
+\lambda(A\mathbf{y}_1+\mathbf{b})
++
+(1-\lambda)(A\mathbf{y}_2+\mathbf{b}).
+\]
+
+<p>The right-hand side is a convex combination of two points in \(X\), hence belongs
+to \(X\). Therefore \(\bar{\mathbf{y}}\in\mathcal{A}^{-1}(X)\).</p>
+
+<div class="callout note">
+  <div class="label">Other useful facts — no proof required here</div>
+  Cartesian products of convex sets are convex, and weighted sums of convex sets
+  are convex. These facts follow from the same idea: form a convex combination
+  and check it component by component.
+</div>
+
+<div class="callout danger">
+  <div class="label">Not every set operation preserves convexity</div>
+  Set difference does not preserve convexity. For example,
+  \[
+  \mathbb{R}\setminus[0,1]
+  =
+  (-\infty,0)\cup(1,\infty)
+  \]
+  is not convex.
+</div>
+
+<h2 id="hull">5. Convex Hull</h2>
+
+<div class="definition">
+  <div class="label">Definition 3 — Convex hull</div>
+  The convex hull of \(X\subseteq\mathbb{R}^n\) is the set of all finite convex combinations of points in \(X\):
+  \[
+  \boxed{
+  \operatorname{conv}(X)
+  =
+  \left\{
+  \mathbf{y}\in\mathbb{R}^n:
+  \mathbf{y}=\sum_{i=1}^{k}\lambda_i\mathbf{x}_i,\;
+  \lambda_i\ge0,\;
+  \sum_{i=1}^{k}\lambda_i=1,\;
+  \mathbf{x}_i\in X
+  \right\}.
+  }
+  \]
+</div>
+
+<div class="proposition">
+  <div class="label">Fundamental properties of the convex hull</div>
+  <ol>
+    <li>\(\operatorname{conv}(X)\) is convex, even when \(X\) is not.</li>
+    <li>If \(X\) is convex, then \(\operatorname{conv}(X)=X\).</li>
+    <li>\(\operatorname{conv}(X)\) is the smallest convex set containing \(X\).</li>
+  </ol>
+</div>
+
+<h3>Why is it the smallest convex superset?</h3>
+
+<p>First, every \(\mathbf{x}\in X\) is itself a convex combination with one point, so</p>
+
+\[
+X\subseteq\operatorname{conv}(X).
+\]
+
+<p>Now suppose \(C\) is any convex set with \(X\subseteq C\). Since \(C\) contains all convex combinations of its elements, it contains every convex combination of points of \(X\). Therefore</p>
+
+\[
+\operatorname{conv}(X)\subseteq C.
+\]
+
+<p>Thus no smaller convex set can contain \(X\).</p>
+
+<div class="example">
+  <div class="label">Example</div>
+  Let
+  \[
+  X=[0,1]\cup[2,3].
+  \]
+  The original set has a gap between \(1\) and \(2\), so it is not convex. Filling in all line segments gives
+  \[
+  \boxed{
+  \operatorname{conv}(X)=[0,3].
+  }
+  \]
+</div>
+
+<div class="figure-card">
+  <svg viewBox="0 0 720 200" aria-label="convex hull of two intervals">
+    <line x1="80" y1="100" x2="650" y2="100" stroke="#111827" stroke-width="3"/>
+    <line x1="140" y1="85" x2="260" y2="85" stroke="#1d4ed8" stroke-width="9"/>
+    <line x1="380" y1="85" x2="500" y2="85" stroke="#1d4ed8" stroke-width="9"/>
+    <line x1="140" y1="125" x2="500" y2="125" stroke="#166534" stroke-width="8"/>
+    <text x="135" y="70" font-size="17">[0,1]</text>
+    <text x="375" y="70" font-size="17">[2,3]</text>
+    <text x="278" y="155" font-size="18">conv(X) = [0,3]</text>
+  </svg>
+  <div class="caption">The convex hull fills the missing interval.</div>
+</div>
+
+
+<h2 id="combinations">6. Combination Types and Cones</h2>
+
+<p>
+It is useful to distinguish several kinds of combinations of points
+\(\mathbf{x}_1,\ldots,\mathbf{x}_k\):
+</p>
+
+\[
+\sum_{i=1}^{k}\lambda_i\mathbf{x}_i.
+\]
+
+<table>
+<thead>
+<tr>
+  <th>Combination</th>
+  <th>Conditions on coefficients</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>Convex</strong></td>
+  <td>\(\lambda_i\ge0\) and \(\sum_i\lambda_i=1\)</td>
+</tr>
+<tr>
+  <td><strong>Conic</strong></td>
+  <td>\(\lambda_i\ge0\)</td>
+</tr>
+<tr>
+  <td><strong>Affine</strong></td>
+  <td>\(\sum_i\lambda_i=1\), coefficients may be negative</td>
+</tr>
+<tr>
+  <td><strong>Linear</strong></td>
+  <td>\(\lambda_i\in\mathbb{R}\)</td>
+</tr>
+</tbody>
+</table>
+
+<div class="definition">
+  <div class="label">Cone</div>
+  A set \(K\subseteq\mathbb{R}^n\) is a <strong>cone</strong> if
+  \[
+  \mathbf{x}\in K,\ \alpha\ge0
+  \quad\Longrightarrow\quad
+  \alpha\mathbf{x}\in K.
+  \]
+</div>
+
+<p>
+A set that is both a cone and a convex set is called a
+<strong>convex cone</strong>.
+</p>
+
+<div class="example">
+  <div class="label">Examples</div>
+  The first quadrant
+  \[
+  K_1=\{(x_1,x_2):x_1\ge0,\ x_2\ge0\}
+  \]
+  is a convex cone. By contrast,
+  \[
+  K_2=\{(x_1,x_2):x_1x_2\ge0\}
+  \]
+  is a cone but is not convex.
+</div>
+
+<div class="callout note">
+  <div class="label">Why only a brief introduction?</div>
+  For this course, the main concept is <strong>convexity</strong>. Cones become
+  especially important later in more advanced topics such as conic and
+  semidefinite optimization.
+</div>
+
+<h2 id="convex-functions">7. Convex Functions</h2>
+
+<div class="definition">
+  <div class="label">Definition 5 — Convex function</div>
+  Let \(f:\mathbb{R}^n\to\overline{\mathbb{R}}\), where
+  \(\overline{\mathbb{R}}=\mathbb{R}\cup\{+\infty\}\).
+  The function \(f\) is <strong>convex</strong> if:
+  <ol>
+    <li>its effective domain
+      \[
+      \operatorname{dom}(f)
+      =
+      \{\mathbf{x}:f(\mathbf{x})<+\infty\}
+      \]
+      is a convex set; and
+    </li>
+    <li>for every \(\mathbf{x},\mathbf{y}\in\operatorname{dom}(f)\) and
+      \(\lambda\in[0,1]\),
+      \[
+      \boxed{
+      f\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)
+      \le
+      \lambda f(\mathbf{x})+(1-\lambda)f(\mathbf{y}).
+      }
+      \]
+    </li>
+  </ol>
+</div>
+
+<div class="callout good">
+  <div class="label">Geometric meaning</div>
+  Pick two points \((\mathbf{x},f(\mathbf{x}))\) and
+  \((\mathbf{y},f(\mathbf{y}))\) on the graph. For a convex function, the
+  straight chord joining these points lies <strong>on or above</strong> the graph.
+</div>
+
+<div class="figure-card">
+  <svg viewBox="0 0 700 350" aria-label="convex function chord">
+    <line x1="75" y1="300" x2="650" y2="300" stroke="#111827" stroke-width="2"/>
+    <line x1="95" y1="325" x2="95" y2="35" stroke="#111827" stroke-width="2"/>
+    <path d="M130,260 C250,250 305,175 360,155 C440,125 520,100 610,45"
+          fill="none" stroke="#1d4ed8" stroke-width="4"/>
+    <circle cx="170" cy="248" r="7" fill="#991b1b"/>
+    <circle cx="560" cy="75" r="7" fill="#991b1b"/>
+    <line x1="170" y1="248" x2="560" y2="75" stroke="#166534" stroke-width="4"/>
+    <circle cx="365" cy="161.5" r="6" fill="#166534"/>
+    <text x="330" y="195" font-size="16">graph value</text>
+    <text x="408" y="123" font-size="16">chord</text>
+  </svg>
+  <div class="caption">
+    \(f(\lambda\mathbf{x}+(1-\lambda)\mathbf{y})\) is no larger than the
+    corresponding weighted average of \(f(\mathbf{x})\) and \(f(\mathbf{y})\).
+  </div>
+</div>
+
+<h3>7.1 Example: \(f(x)=x^2\)</h3>
+
+<p>The domain is \(\mathbb{R}\), which is convex. For \(x,y\in\mathbb{R}\) and
+\(\lambda\in[0,1]\),</p>
+
+\[
+\begin{aligned}
+&\lambda x^2+(1-\lambda)y^2
+-\bigl(\lambda x+(1-\lambda)y\bigr)^2\\
+&\qquad
+=\lambda(1-\lambda)(x-y)^2
+\ge0.
+\end{aligned}
+\]
+
+<p>Therefore</p>
+
+\[
+\boxed{
+\bigl(\lambda x+(1-\lambda)y\bigr)^2
+\le
+\lambda x^2+(1-\lambda)y^2,
+}
+\]
+
+<p>so \(f(x)=x^2\) is convex. In fact, the inequality is strict whenever
+\(x\neq y\) and \(\lambda\in(0,1)\), so \(x^2\) is strictly convex.</p>
+
+<h3>7.2 Example: \(f(x)=e^x\)</h3>
+
+<p>Since</p>
+
+\[
+f''(x)=e^x>0
+\qquad\forall x\in\mathbb{R},
+\]
+
+<p>\(e^x\) is strictly convex on \(\mathbb{R}\).</p>
+
+<div class="exercise">
+  <div class="label">Exercise</div>
+  Verify directly that
+  \[
+  e^{\lambda x+(1-\lambda)y}
+  \le
+  \lambda e^x+(1-\lambda)e^y.
+  \]
+  Later this follows immediately from Jensen’s inequality.
+</div>
+
+<h3>7.3 Example: affine functions</h3>
+
+<p>Let</p>
+
+\[
+f(\mathbf{x})=\mathbf{a}^{\top}\mathbf{x}+b.
+\]
+
+<p>Then</p>
+
+\[
+\begin{aligned}
+f\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)
+&=
+\mathbf{a}^{\top}
+\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)+b\\
+&=
+\lambda(\mathbf{a}^{\top}\mathbf{x}+b)
++(1-\lambda)(\mathbf{a}^{\top}\mathbf{y}+b)\\
+&=
+\lambda f(\mathbf{x})+(1-\lambda)f(\mathbf{y}).
+\end{aligned}
+\]
+
+<p>Thus every affine function satisfies the convexity inequality with equality.
+It is therefore both convex and concave.</p>
+
+<div class="callout key">
+  <div class="label">Connection to optimization</div>
+  Convex sets describe the geometry of feasible regions, while convex functions
+  describe the geometry of objectives. Minimizing a convex function over a
+  convex feasible set is the basic setting of convex optimization.
+</div>
+
+
+
+<h2 id="convex-examples">8. Two Useful Examples of Convex Functions</h2>
+
+<h3>8.1 Norms are convex functions</h3>
+
+<div class="definition">
+  <div class="label">Recall — Norm</div>
+  A norm \(\|\cdot\|\) satisfies, among other properties,
+  \[
+  \|\alpha\mathbf{x}\|=|\alpha|\,\|\mathbf{x}\|
+  \]
+  and
+  \[
+  \|\mathbf{x}+\mathbf{y}\|
+  \le
+  \|\mathbf{x}\|+\|\mathbf{y}\|.
+  \]
+</div>
+
+<div class="proposition">
+  <div class="label">Proposition — Every norm is convex</div>
+  For \(\lambda\in[0,1]\),
+  \[
+  \begin{aligned}
+  \|\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\|
+  &\le
+  \|\lambda\mathbf{x}\|
+  +
+  \|(1-\lambda)\mathbf{y}\|\\
+  &=
+  \lambda\|\mathbf{x}\|
+  +(1-\lambda)\|\mathbf{y}\|.
+  \end{aligned}
+  \]
+  Thus every norm satisfies the convexity inequality.
+</div>
+
+<p>Examples include the familiar \(p\)-norms</p>
+
+\[
+\|\mathbf{x}\|_p
+=
+\left(
+\sum_{i=1}^{n}|x_i|^p
+\right)^{1/p},
+\qquad p\ge1.
+\]
+
+<h3>8.2 Indicator functions: encoding constraints in the objective</h3>
+
+<div class="definition">
+  <div class="label">Indicator function</div>
+  For a set \(C\subseteq\mathbb{R}^n\),
+  \[
+  I_C(\mathbf{x})
+  =
+  \begin{cases}
+  0, & \mathbf{x}\in C,\\
+  +\infty, & \mathbf{x}\notin C.
+  \end{cases}
+  \]
+</div>
+
+<p>If \(C\) is convex, then \(I_C\) is a convex extended-valued function.</p>
+
+<div class="callout key">
+  <div class="label">Why keep this concept?</div>
+  It lets us rewrite a constrained problem
+  \[
+  \min_{\mathbf{x}\in C}f(\mathbf{x})
+  \]
+  as
+  \[
+  \boxed{
+  \min_{\mathbf{x}}
+  \bigl[f(\mathbf{x})+I_C(\mathbf{x})\bigr].
+  }
+  \]
+  This viewpoint will become useful later when we study proximal methods.
+</div>
+
+
+<h2 id="special-convexity">9. Strict Convexity, Strong Convexity, and Concavity</h2>
+
+<div class="definition">
+  <div class="label">Strict convexity</div>
+  A convex function \(f\) is <strong>strictly convex</strong> if, for
+  \(\mathbf{x}\neq\mathbf{y}\) and \(\lambda\in(0,1)\),
+  \[
+  f\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)
+  <
+  \lambda f(\mathbf{x})+(1-\lambda)f(\mathbf{y}).
+  \]
+</div>
+
+<div class="callout good">
+  <div class="label">Intuition</div>
+  For a strictly convex function, the chord lies <em>strictly above</em> the graph
+  between two distinct points.
+</div>
+
+<div class="definition">
+  <div class="label">Strong convexity</div>
+  For \(\mu>0\), \(f\) is \(\mu\)-strongly convex if
+  \[
+  \boxed{
+  \mathbf{x}\mapsto
+  f(\mathbf{x})-\frac{\mu}{2}\|\mathbf{x}\|_2^2
+  }
+  \]
+  is convex.
+</div>
+
+<p>
+Strong convexity means that the function has a definite amount of upward
+curvature. We will return to this idea when studying convergence of gradient
+methods.
+</p>
+
+<div class="definition">
+  <div class="label">Concavity</div>
+  A function \(g\) is <strong>concave</strong> if \(-g\) is convex. Equivalently,
+  \[
+  g\bigl(\lambda\mathbf{x}+(1-\lambda)\mathbf{y}\bigr)
+  \ge
+  \lambda g(\mathbf{x})+(1-\lambda)g(\mathbf{y}).
+  \]
+</div>
+
+<p>Typical examples are</p>
+
+\[
+-x^2,
+\qquad
+\sqrt{x}\ (x\ge0),
+\qquad
+\log x\ (x>0).
+\]
+
+<div class="callout note">
+  <div class="label">Affine functions</div>
+  Affine functions are both convex and concave because the defining inequality
+  holds with equality.
+</div>
+
+<h3>9.1 Sums</h3>
+
+<ul>
+  <li>The sum of convex functions is convex.</li>
+  <li>The sum of strictly convex functions is strictly convex.</li>
+  <li>If \(f\) is strongly convex and \(g\) is convex, then \(f+g\) is strongly convex.</li>
+</ul>
+
+<h2 id="jensen">10. Jensen’s Inequality</h2>
+
+<div class="theorem">
+  <div class="label">Jensen’s inequality</div>
+  Let \(f:\mathbb{R}^n\to\overline{\mathbb{R}}\) be convex. For points
+  \(\mathbf{x}_1,\ldots,\mathbf{x}_k\) in its domain and weights
+  \(\lambda_i\ge0\) satisfying
+  \[
+  \sum_{i=1}^{k}\lambda_i=1,
+  \]
+  we have
+  \[
+  \boxed{
+  f\left(\sum_{i=1}^{k}\lambda_i\mathbf{x}_i\right)
+  \le
+  \sum_{i=1}^{k}\lambda_i f(\mathbf{x}_i).
+  }
+  \]
+</div>
+
+<p>The two-point definition of convexity is exactly the case \(k=2\).
+The general finite form follows by induction.</p>
+
+<div class="callout note">
+  <div class="label">For concave functions</div>
+  If \(g\) is concave, the inequality reverses:
+  \[
+  g\left(\sum_i\lambda_i\mathbf{x}_i\right)
+  \ge
+  \sum_i\lambda_i g(\mathbf{x}_i).
+  \]
+</div>
+
+<h3>10.1 Arithmetic Mean–Geometric Mean Inequality</h3>
+
+<p>Let \(x_1,\ldots,x_n>0\). Since \(\log x\) is concave, Jensen’s inequality
+with \(\lambda_i=1/n\) gives</p>
+
+\[
+\frac1n\sum_{i=1}^{n}\log x_i
+\le
+\log\left(\frac1n\sum_{i=1}^{n}x_i\right).
+\]
+
+<p>Using</p>
+
+\[
+\frac1n\sum_{i=1}^{n}\log x_i
+=
+\log\left(
+\prod_{i=1}^{n}x_i
+\right)^{1/n},
+\]
+
+<p>and the fact that \(\log\) is increasing,</p>
+
+\[
+\boxed{
+\left(
+\prod_{i=1}^{n}x_i
+\right)^{1/n}
+\le
+\frac1n\sum_{i=1}^{n}x_i.
+}
+\]
+
+<div class="callout key">
+  <div class="label">Interpretation</div>
+  The geometric mean never exceeds the arithmetic mean.
+</div>
+
+
+
+<h2 id="why-convexity">11. Why Convexity Matters in Optimization</h2>
+
+<div class="theorem">
+  <div class="label">Key result — Local minimum = global minimum</div>
+  Let \(f\) be convex on a convex set \(C\). If
+  \(\mathbf{x}^\star\in C\) is a local minimum of \(f\) over \(C\), then
+  \(\mathbf{x}^\star\) is also a global minimum.
+</div>
+
+<p><strong>Proof idea.</strong> Suppose \(\mathbf{x}^\star\) were only locally
+optimal and not globally optimal. Then there would exist
+\(\mathbf{y}\in C\) such that</p>
+
+\[
+f(\mathbf{y})
+<
+f(\mathbf{x}^\star).
+\]
+
+<p>Because \(C\) is convex, for every sufficiently small \(\lambda>0\),</p>
+
+\[
+\mathbf{z}_\lambda
+=
+(1-\lambda)\mathbf{x}^\star+\lambda\mathbf{y}
+\in C
+\]
+
+<p>and \(\mathbf{z}_\lambda\) can be made arbitrarily close to
+\(\mathbf{x}^\star\). Convexity gives</p>
+
+\[
+\begin{aligned}
+f(\mathbf{z}_\lambda)
+&\le
+(1-\lambda)f(\mathbf{x}^\star)
++
+\lambda f(\mathbf{y})\\
+&<
+f(\mathbf{x}^\star),
+\end{aligned}
+\]
+
+<p>which contradicts local optimality. Therefore every local minimum is global.</p>
+
+<div class="callout good">
+  <div class="label">Another important consequence</div>
+  If \(f\) is <strong>strictly convex</strong> on a convex feasible set, then it
+  can have at most one global minimizer.
+</div>
+
+<div class="callout key">
+  <div class="label">This is the main reason convexity is so valuable</div>
+  For a general nonconvex problem, an algorithm may stop at a poor local minimum.
+  In a convex optimization problem, local optimality is enough to guarantee
+  global optimality.
+</div>
+
+<h2 id="summary">12. Summary and Concept Checks</h2>
+
+<table>
+<thead>
+<tr>
+  <th>Concept</th>
+  <th>Main fact to remember</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Convex set</td>
+  <td>Contains the line segment between any two of its points</td>
+</tr>
+<tr>
+  <td>Hyperplane / halfspace</td>
+  <td>Convex</td>
+</tr>
+<tr>
+  <td>Norm ball</td>
+  <td>Convex</td>
+</tr>
+<tr>
+  <td>Intersection</td>
+  <td>Intersection of convex sets is convex</td>
+</tr>
+<tr>
+  <td>Affine image / inverse affine image</td>
+  <td>Convexity is preserved</td>
+</tr>
+<tr>
+  <td>Convex hull</td>
+  <td>Smallest convex set containing the original set</td>
+</tr>
+<tr>
+  <td>Convex function</td>
+  <td>The graph lies below its chords</td>
+</tr>
+<tr>
+  <td>Norm</td>
+  <td>A convex function</td>
+</tr>
+<tr>
+  <td>Strict convexity</td>
+  <td>Useful for uniqueness of a minimizer</td>
+</tr>
+<tr>
+  <td>Strong convexity</td>
+  <td>Convexity with a definite amount of curvature</td>
+</tr>
+<tr>
+  <td>Jensen’s inequality</td>
+  <td>Extends the two-point convexity inequality to many points</td>
+</tr>
+<tr>
+  <td>Convex optimization</td>
+  <td>Every local minimum is a global minimum</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</body>
+</html>

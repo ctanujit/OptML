@@ -1,0 +1,779 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Introduction to Optimization (MATH-224) - Lecture 6</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+:root{
+  --ink:#1f2937; --muted:#6b7280; --accent:#1d4ed8; --accent-soft:#eff6ff;
+  --green:#166534; --green-soft:#f0fdf4; --amber:#92400e; --amber-soft:#fffbeb;
+  --red:#991b1b; --red-soft:#fef2f2; --purple:#6b21a8; --purple-soft:#faf5ff;
+  --border:#d1d5db; --bg:#ffffff; --panel:#f9fafb; --blue:#006b7d; --lecture:#9b2c14;
+}
+*{box-sizing:border-box;} html{scroll-behavior:smooth;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,Helvetica,sans-serif;line-height:1.68;}
+.wrap{max-width:1100px;margin:0 auto;padding:42px 30px 72px;}
+.lecture-header{margin-bottom:30px;padding-bottom:18px;border-bottom:3px solid var(--accent);}
+.lecture-header h1{margin:0;color:#111827;font-size:2.28rem;line-height:1.2;font-weight:700;}
+.lecture-header .subtitle{margin-top:8px;color:#374151;font-size:1.22rem;}
+.lecture-header .byline{margin-top:6px;color:var(--muted);font-size:1.06rem;}
+h2{font-size:1.58rem;line-height:1.25;color:#111827;margin-top:2em;border-left:5px solid var(--accent);padding-left:12px;}
+h3{font-size:1.22rem;color:#111827;margin-top:1.55em;} h4{font-size:1.05rem;color:#111827;margin-top:1.35em;}
+p{margin:.68em 0;} ul,ol{padding-left:1.45rem;} li{margin:.35em 0;} a{color:var(--accent);text-decoration:none;}
+.toc{border:1px solid var(--border);background:#fbfdff;border-radius:14px;padding:18px 22px;margin:22px 0 28px;}
+.toc h3{margin-top:0}.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 34px;}
+.callout{border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:18px 0;background:var(--panel);}
+.key{background:var(--accent-soft);border-color:#bfdbfe}.good{background:var(--green-soft);border-color:#bbf7d0}
+.warn{background:var(--amber-soft);border-color:#fde68a}.danger{background:var(--red-soft);border-color:#fecaca}
+.note{background:#eef6ff;border-color:#c9dcfb}.purple{background:var(--purple-soft);border-color:#e9d5ff}
+.label{font-weight:700;margin-bottom:6px}
+.theorem{border-left:5px solid var(--purple);background:var(--purple-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.proposition{border-left:5px solid var(--green);background:var(--green-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.definition{border-left:5px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.example{border-left:5px solid var(--lecture);background:#fffaf7;border-radius:8px;padding:15px 18px;margin:19px 0;}
+.exercise{border:1px dashed #f59e0b;background:#fffdf5;border-radius:10px;padding:15px 18px;margin:19px 0;}
+.math-result{background:var(--panel);padding:14px 18px;border-radius:10px;border:1px solid var(--border);margin:16px 0;}
+.summary{border:2px solid #bfdbfe;background:#f8fbff;border-radius:14px;padding:20px;margin-top:34px;}
+.small{color:var(--muted);font-size:.93rem}.step{border-left:3px solid #cbd5e1;padding-left:16px;margin:14px 0;}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.98rem;}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top;}th{background:#f3f4f6;font-weight:700;}
+.figure-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0 10px;align-items:start;}
+.figure-card{border:1px solid var(--border);border-radius:10px;background:white;padding:14px;}
+.figure-card > svg{width:100%;height:auto;display:block}.caption{color:var(--blue);font-size:1rem;margin-top:8px;}
+.bridge{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0;}
+.bridge .box{border:1px solid var(--border);border-radius:10px;padding:12px 10px;background:#fff;text-align:center;font-size:.94rem;}
+.bridge .now{border-color:#93c5fd;background:#eff6ff;font-weight:700;}
+mjx-container[jax="SVG"]{font-size:.98em!important}mjx-container[jax="SVG"][display="true"]{font-size:.96em!important;margin:.78em 0!important;max-width:100%;overflow-x:auto;overflow-y:hidden}
+mjx-container[jax="SVG"] svg{max-width:100%}.math-small mjx-container[jax="SVG"][display="true"]{font-size:.89em!important}
+@media(max-width:800px){.figure-grid,.toc-grid,.bridge{grid-template-columns:1fr}.wrap{padding:24px 16px 50px}.lecture-header h1{font-size:1.8rem}}
+@media print{.wrap{max-width:none;padding:15mm}h2{page-break-after:avoid}table,.callout,.theorem,.proposition,.definition,.example,.math-result,.figure-card{page-break-inside:avoid}.toc a{color:inherit;text-decoration:none}}
+
+/* Interactive teaching widgets, deliberately consistent with the Lecture 5 design. */
+.interactive{margin:22px 0;padding:18px;border:1px solid #cbd5e1;border-radius:14px;background:#fbfdff;}
+.widget-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 18px;margin-bottom:14px;font-size:1.08rem;}
+.mini{font-size:.85rem;color:#64748b;}
+.controls{display:flex;align-items:end;gap:10px 14px;flex-wrap:wrap;margin:14px 0;}
+.controls label{font-size:.89rem;font-weight:600;display:flex;flex-direction:column;gap:5px;}
+.controls label.checklabel{flex-direction:row;align-items:center;gap:8px;padding-bottom:8px;}
+.controls input[type=number],.controls select{padding:8px 10px;border:1px solid #94a3b8;border-radius:7px;background:white;color:#172033;font-size:.95rem;min-width:98px;max-width:150px;}
+.controls input[type=range]{width:145px;accent-color:#1d4ed8;}
+.controls button,.code-actions button{border:1px solid #1d4ed8;background:#eff6ff;color:#1d4ed8;cursor:pointer;border-radius:7px;padding:9px 13px;font-weight:700;white-space:nowrap;}
+.controls button.primary{background:#1d4ed8;color:white;}
+.controls button.ghost{background:white;border-color:#94a3b8;color:#334155;}
+.controls button:hover,.code-actions button:hover{filter:brightness(.95);}
+.controls button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px;}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 18px;}
+.metrics>div{background:#f1f5f9;padding:11px 12px;border-radius:9px;min-width:0;}
+.metrics small{display:block;font-size:.82rem;color:#475569;}
+.metrics b{font-size:1.13rem;display:block;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+.plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.plot-grid canvas,.plot-one canvas{width:100%;height:auto;background:white;border:1px solid #cbd5e1;border-radius:8px;display:block;}
+.plot-grid .caption,.plot-one + .caption{font-size:.85rem;line-height:1.48;margin:7px 0 10px;}
+.status{font-size:.95rem;background:#eff6ff;border-left:3px solid #1d4ed8;padding:9px 12px;border-radius:5px;}
+.table-scroll{max-width:100%;overflow-x:auto;}
+.iter-table{font-size:.82rem;margin:10px 0;}
+.iter-table th,.iter-table td{padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.center{text-align:center;color:#475569;margin:0;}
+.code-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:15px 0;}
+.download-link{display:inline-block;padding:9px 13px;background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;border-radius:7px;font-weight:700;cursor:pointer;}
+.code-details{border:1px solid #cbd5e1;border-radius:8px;margin:12px 0;}
+.code-details summary{padding:12px 16px;cursor:pointer;font-weight:700;background:#f1f5f9;}
+.code-details pre{font-size:.81rem;line-height:1.45;overflow-x:auto;max-height:650px;margin:0;padding:18px;background:#0f172a;color:#e2e8f0;white-space:pre;}
+code{font-family:Consolas,Monaco,monospace;font-size:.91em;}
+@media(max-width:900px){.plot-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.metrics{grid-template-columns:1fr 1fr}.interactive{padding:11px}.controls label{width:auto}}
+@media print{.controls,.code-actions{display:none}.interactive{break-inside:avoid}.code-details:not([open]) pre{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="lecture-header">
+  <h1>Introduction to Optimization (MATH-224) - Lecture 6</h1>
+  <div class="subtitle">Newton–Raphson Method: Numerical Optimization and Maximum Likelihood</div>
+  <div class="byline">by Tanujit Chakraborty</div>
+</header>
+<div class="callout key"><div class="label">Where we are in the course</div>
+  In Lecture 5, the Gamma shape likelihood led to a score equation involving the digamma function; we could identify an optimum, but not isolate it using elementary algebra. Today we <strong>compute</strong> that optimum. We begin with the one-dimensional Newton–Raphson method, examine its behavior on both concave and nonconcave likelihoods, and finish with the multivariate method applied to ridge regression.
+</div>
+<div class="bridge">
+ <div class="box">Lectures 1–2<br/><b>Calculus / Hessians</b></div><div class="box">Lecture 3<br/><b>Optimization models</b></div><div class="box">Lecture 4<br/><b>Convexity</b></div><div class="box">Lecture 5<br/><b>MLE objectives</b></div><div class="box now">Lecture 6<br/><b>Newton–Raphson</b></div>
+</div>
+<div class="toc"><h3>Lecture roadmap</h3><div class="toc-grid">
+ <a href="#review">1. Recall: Gamma MLE without a closed form</a><a href="#numerical">2. What numerical optimization does</a>
+ <a href="#derivation">3. Deriving Newton–Raphson</a><a href="#gamma">4. Gamma likelihood: a complete example</a>
+ <a href="#gamma-lab">5. Interactive Gamma experiment</a><a href="#cauchy">6. Cauchy likelihood: multiple optima</a>
+ <a href="#cauchy-lab">7. Interactive Cauchy experiment</a><a href="#multivariate">8. Newton's method in several variables</a>
+ <a href="#ridge">9. Ridge regression and a single Newton step</a><a href="#python">10. Python practical</a>
+ <a href="#cautions">11. When Newton can fail</a><a href="#summary">12. Summary and exercises</a>
+</div></div>
+
+<h2 id="review">1. Recall from Lecture 5: No Closed-Form MLE</h2>
+<p>Consider a random sample <span class="math">\(X_1,\ldots,X_n\overset{\mathrm{iid}}{\sim}\operatorname{Gamma}(\alpha,1)\)</span>, with unknown shape <span class="math">\(\alpha>0\)</span> and unit rate. Its density is</p>
+\[
+f(x\mid\alpha)=\frac{x^{\alpha-1}e^{-x}}{\Gamma(\alpha)},\qquad x>0.
+\]
+<p>The likelihood, log-likelihood, and score are, respectively,</p>
+<div class="math-small">\[
+\begin{aligned}
+L(\alpha\mid\mathbf x)&=\frac{e^{-\sum_i x_i}}{\Gamma(\alpha)^n}\prod_{i=1}^{n}x_i^{\alpha-1},\\
+\ell(\alpha)&=-n\log\Gamma(\alpha)+(\alpha-1)\sum_{i=1}^{n}\log x_i-\sum_{i=1}^{n}x_i,\\
+\ell'(\alpha)&=\sum_{i=1}^{n}\log x_i-n\psi(\alpha),
+\end{aligned}
+\]</div>
+<p>where <span class="math">\(\psi(\alpha)=\frac{d}{d\alpha}\log\Gamma(\alpha)\)</span> is the <strong>digamma function</strong>. A stationary point must satisfy</p>
+\[\boxed{\psi(\alpha)=\frac{1}{n}\sum_{i=1}^{n}\log x_i.}\]
+<p>The second derivative is</p>
+\[\ell''(\alpha)=-n\psi_1(\alpha)<0,\quad \alpha>0,\]
+<p>because the trigamma function <span class="math">\(\psi_1(\alpha)=\psi'(\alpha)\)</span> is positive. Thus the log-likelihood is <strong>strictly concave</strong>; its unique maximum exists for positive observations, but the score equation has no elementary closed-form solution.</p>
+<div class="callout good"><div class="label">Key distinction</div>Having a unique optimal parameter is not the same as having a formula for it. This is why numerical optimization is needed.</div>
+
+<h2 id="numerical">2. From an Analytic Answer to an Iterative Algorithm</h2>
+<p>Given an objective <span class="math">\(f(\theta)\)</span>, our goal might be <span class="math">\(\theta^\star\in\arg\max_\theta f(\theta)\)</span> (a log-likelihood) or <span class="math">\(\theta^\star\in\arg\min_\theta f(\theta)\)</span> (a loss or negative log-likelihood).</p>
+<p>When the stationary equation <span class="math">\(f'(\theta)=0\)</span> cannot be solved analytically, a numerical method starts at a guess <span class="math">\(\theta_0\)</span> and forms</p>
+\[\theta_0,\theta_1,\theta_2,\ldots\]
+<p>using a repeatable update. Good algorithms seek a stationary point while respecting the domain and, when possible, improving the objective.</p>
+<table><thead><tr><th>What we already know</th><th>What we want to find</th></tr></thead><tbody>
+<tr><td>\(f(\theta),\ f'(\theta),\ f''(\theta)\)</td><td>A numerical approximation to a stationary point</td></tr>
+<tr><td>Concavity / convexity</td><td>Whether a stationary point is globally optimal</td></tr>
+<tr><td>Starting value \(\theta_0\)</td><td>An iteration that approaches a solution</td></tr>
+</tbody></table>
+<div class="callout warn"><div class="label">A necessary qualification</div>Newton's method is a <em>local</em> iterative method. Even a strictly concave function does not, by concavity alone, guarantee that the <em>undamped</em> Newton iteration converges from every starting value. We will see how to safeguard it.</div>
+
+<h2 id="derivation">3. Deriving Newton–Raphson from Taylor's Formula</h2>
+<h3>3.1 Apply Newton's method to the score equation</h3>
+<p>At an interior optimum <span class="math">\(\theta^\star\)</span>, we expect <span class="math">\(f'(\theta^\star)=0\)</span>. Approximate the derivative at <span class="math">\(\theta^\star\)</span> by a first-order Taylor expansion around the current iterate <span class="math">\(\theta_k\)</span>:</p>
+\[\underbrace{f'(\theta^\star)}_{=0}\ \approx\ f'(\theta_k)+(\theta^\star-\theta_k)f''(\theta_k).\]
+<p>Solving the linear approximation for the unknown root gives</p>
+\[\theta^\star\approx\theta_k-\frac{f'(\theta_k)}{f''(\theta_k)}.\]
+<div class="math-result">\[\boxed{\theta_{k+1}=\theta_k-\frac{f'(\theta_k)}{f''(\theta_k)}.}\]
+<p class="center">Newton–Raphson iteration in one dimension.</p></div>
+<p>Each step uses both the <strong>slope</strong> and the <strong>curvature</strong> at the current parameter value. Geometrically, it finds the zero of a tangent line to the derivative <span class="math">\(f'\)</span>.</p>
+<h3>3.2 Why it moves toward a maximum—locally</h3>
+<p>Suppose near the current point the objective is concave, so <span class="math">\(f''(\theta_k)<0\)</span>. If <span class="math">\(f'(\theta_k)>0\)</span>, the Newton correction <span class="math">\(-f'/f''\)</span> is positive and the parameter moves right; if <span class="math">\(f'(\theta_k)<0\)</span>, it moves left. Near a strict maximum this tends to move toward the optimum.</p>
+<div class="callout note"><div class="label">Newton solves a root equation</div>The same update works algebraically for maximization and minimization: it solves <span class="math">\(f'(\theta)=0\)</span>. Whether the stationary point is a maximum, minimum, or neither depends on the curvature and the objective. The formula itself does not enforce maximization.</div>
+<h3>3.3 A few iterations on a simple example</h3>
+<p>Take <span class="math">\(f(\theta)=-(\theta-3)^2\)</span>. Its derivatives are <span class="math">\(f'(\theta)=-2(\theta-3)\)</span> and <span class="math">\(f''(\theta)=-2\)</span>. Starting at <span class="math">\(\theta_0=0\)</span>,</p>
+\[\theta_1=0-\frac{6}{-2}=3.\]
+<p>The quadratic reaches its maximum in <strong>one step</strong>. For a nonquadratic likelihood, several iterations may be necessary.</p>
+<h3>3.4 When do we stop?</h3>
+<p>A simple stopping rule checks whether successive iterates are close:</p>
+\[|\theta_{k+1}-\theta_k|\le\varepsilon(1+|\theta_k|).\]
+<p>In practice, also monitor <span class="math">\(|f'(\theta_k)|\)</span>, enforce a maximum number of iterations, and guard against near-zero curvature or leaving the admissible parameter space.</p>
+
+<h2 id="gamma">4. Worked Example: Newton–Raphson for the Gamma Shape MLE</h2>
+<p>Return to the Gamma log-likelihood from Section 1. Its first two derivatives are</p>
+<div class="math-result">\[
+\boxed{\ell'(\alpha)=\sum_{i=1}^{n}\log x_i-n\psi(\alpha),\qquad
+\ell''(\alpha)=-n\psi_1(\alpha).}
+\]</div>
+<p>Putting these into Newton's formula,</p>
+<div class="math-small">\[
+\begin{aligned}
+\alpha_{k+1}
+&=\alpha_k-\frac{\sum_i\log x_i-n\psi(\alpha_k)}{-n\psi_1(\alpha_k)}\\
+&=\alpha_k+\frac{\frac1n\sum_i\log x_i-\psi(\alpha_k)}{\psi_1(\alpha_k)}.
+\end{aligned}
+\]</div>
+<div class="callout good"><div class="label">Practical starting value</div>Since <span class="math">\(E[X]=\alpha\)</span> for a Gamma distribution with shape <span class="math">\(\alpha\)</span> and unit rate, the sample mean <span class="math">\(\bar x\)</span> is a reasonable initial guess. In the original R exercise, <span class="math">\(\alpha_0=2\)</span> is chosen to make the iterative path visible.</div>
+<p>Because the parameter must remain positive, an overly large Newton step may be invalid. One simple safeguard is <strong>step halving</strong>: try the full step, then halve it until the candidate is positive and the log-likelihood does not decrease.</p>
+<p>For teaching, compare two samples generated under <span class="math">\(\alpha_{\mathrm{true}}=5\)</span>: a small sample (<span class="math">\(n=10\)</span>) and a larger sample (<span class="math">\(n=1000\)</span>). Both may yield converged numerical MLEs, but the small-sample MLE can be farther from the generating value purely because of sampling variation.</p>
+
+<h2 id="gamma-lab">5. Interactive Experiment A — Gamma Likelihood</h2>
+<p>Change the sample size or starting point, then advance Newton one iteration at a time. The left plot shows the likelihood; the right plot shows Newton's <em>root-finding interpretation</em>, with the tangent to the score at the current iterate. Vertical markers distinguish the <strong>generating parameter</strong> from the <strong>sample MLE</strong>.</p>
+<div class="interactive" id="gamma-lab-widget">
+  <div class="widget-heading"><b>Gamma(shape, rate = 1)</b><span class="mini">Fixed Python-generated datasets; no re-randomization when controls change</span></div>
+  <div class="controls">
+    <label>Sample size <select id="gammaN"><option value="10">n = 10</option><option value="1000">n = 1,000</option></select></label>
+    <label>Initial shape α₀ <input id="gammaStart" type="number" value="2" min="0.2" max="14" step="0.2" /></label>
+    <label class="checklabel"><input id="gammaSafe" type="checkbox" checked /> Safeguarded Newton</label>
+    <button id="gammaStep" type="button">Next iteration</button><button id="gammaRun" type="button" class="primary">Run to stopping rule</button><button id="gammaReset" type="button" class="ghost">Reset</button>
+  </div>
+  <div class="metrics"><div><small>Current α</small><b id="gammaCurrent">2.0000</b></div><div><small>Sample MLE</small><b id="gammaMLE">—</b></div><div><small>Score ℓ′(α) / n</small><b id="gammaScore">—</b></div><div><small>Steps</small><b id="gammaCount">0</b></div></div>
+  <div class="plot-grid"><div><canvas id="gammaPlot" width="720" height="350" role="img" aria-label="Gamma log-likelihood and Newton iterates"></canvas><p class="caption">Blue curve: log-likelihood per observation, centered at the MLE. Red dashed: generating shape 5; green dashed: sample MLE.</p></div><div><canvas id="gammaScorePlot" width="720" height="350" role="img" aria-label="Gamma score and tangent line at current iteration"></canvas><p class="caption">Newton locates where the tangent to the score crosses zero; that crossing is the proposed next iterate.</p></div></div>
+  <p class="status" id="gammaStatus" aria-live="polite">Ready. Press “Next iteration.”</p>
+  <div class="table-scroll"><table class="iter-table"><thead><tr><th>k</th><th>αₖ</th><th>ℓ′(αₖ)/n</th><th>ℓ″(αₖ)/n</th><th>Next update</th></tr></thead><tbody id="gammaRows"></tbody></table></div>
+</div>
+<div class="callout warn"><div class="label">Observe two different questions</div>
+<em>Numerical convergence:</em> did Newton solve the sample's score equation? <em>Statistical accuracy:</em> is the resulting MLE close to the generating shape 5? These are not the same question. Larger samples tend to improve accuracy, but not deterministically for every realization.</div>
+
+<h2 id="cauchy">6. Worked Example: Cauchy Location Likelihood</h2>
+<p>Now consider a distribution whose likelihood <strong>need not be concave</strong>. Let <span class="math">\(X_i\)</span> be independent Cauchy observations with location <span class="math">\(\mu\in\mathbb R\)</span> and known scale 1:</p>
+\[f(x\mid\mu)=\frac{1}{\pi\{1+(x-\mu)^2\}}.\]
+<p>The log-likelihood is</p>
+\[\ell(\mu)=-n\log\pi-\sum_{i=1}^{n}\log\left[1+(x_i-\mu)^2\right].\]
+<h3>6.1 Compute the score and curvature</h3>
+<p>Using the chain rule,</p>
+\[\boxed{\ell'(\mu)=2\sum_{i=1}^{n}\frac{x_i-\mu}{1+(x_i-\mu)^2}.}\]
+<p>Differentiating again,</p>
+<div class="math-result">\[\boxed{\ell''(\mu)=2\sum_{i=1}^{n}\frac{(x_i-\mu)^2-1}{\left[1+(x_i-\mu)^2\right]^2}.}\]</div>
+<p>Unlike Gamma, this curvature can be <strong>positive or negative</strong> depending on the observations and current location. The log-likelihood is therefore not guaranteed to be globally concave.</p>
+<h3>6.2 The Newton iteration</h3>
+\[\boxed{\mu_{k+1}=\mu_k-\frac{\ell'(\mu_k)}{\ell''(\mu_k)}.}\]
+<p>The sample <strong>median</strong> is a sensible initial guess. Unlike the ordinary mean, the theoretical mean of a Cauchy random variable is undefined, and an extreme observation can destabilize the sample mean.</p>
+<div class="callout danger"><div class="label">Key lesson: stationary does not mean globally optimal</div>A Cauchy likelihood may have several stationary points. Newton's method can converge to different local maxima, converge to a local minimum, or take an enormous step if the curvature is near zero. The starting value matters.</div>
+
+<h2 id="cauchy-lab">7. Interactive Experiment B — Starting Values Matter</h2>
+<p>Compare three reproducible Python Cauchy samples (each generated from location 5, scale 1, with four observations). In particular, the seed 33 sample includes a large outlier and produces multiple likelihood peaks. Change the initial location and watch the path of the unmodified Newton iteration.</p>
+<div class="interactive" id="cauchy-lab-widget">
+  <div class="widget-heading"><b>Cauchy(location μ, scale 1)</b><span class="mini">Raw Newton: intentionally not safeguarded, to expose its failure modes</span></div>
+  <div class="controls">
+   <label>Sample <select id="cauchySeed"><option value="33">Seed 33 (multiple peaks)</option><option value="10">Seed 10</option><option value="1">Seed 1</option></select></label>
+   <label>Start <select id="cauchyStartMode"><option value="median">Sample median</option><option value="7">μ₀ = 7</option><option value="19">μ₀ = 19</option><option value="custom">Custom value</option></select></label>
+   <label>Custom μ₀ <input type="number" id="cauchyCustom" value="7" step="0.5" disabled /></label>
+   <button id="cauchyStep" type="button">Next iteration</button><button id="cauchyRun" type="button" class="primary">Run to stopping rule</button><button id="cauchyReset" type="button" class="ghost">Reset</button>
+  </div>
+  <div class="metrics"><div><small>Current μ</small><b id="cauchyCurrent">—</b></div><div><small>Score ℓ′(μ)</small><b id="cauchyScore">—</b></div><div><small>Curvature ℓ″(μ)</small><b id="cauchyHessian">—</b></div><div><small>Steps</small><b id="cauchyCount">0</b></div></div>
+  <div class="plot-one"><canvas id="cauchyPlot" width="1000" height="420" role="img" aria-label="Cauchy log-likelihood and Newton trajectory"></canvas></div>
+  <p class="caption" id="cauchyData">Observed data: —</p>
+  <p class="status" id="cauchyStatus" aria-live="polite">Ready. Compare different starting values.</p>
+  <div class="table-scroll"><table class="iter-table"><thead><tr><th>k</th><th>μₖ</th><th>ℓ′(μₖ)</th><th>ℓ″(μₖ)</th><th>Interpretation</th></tr></thead><tbody id="cauchyRows"></tbody></table></div>
+</div>
+<div class="callout note"><div class="label">What does a better initial guess mean?</div>Using the median can be reasonable, but it does <em>not</em> mathematically guarantee convergence to the global MLE. A practical global check in one dimension is to inspect the likelihood on a broad grid and refine promising peaks; even then, numerical checks should be distinguished from a proof of global optimality.</div>
+
+<h2 id="multivariate">8. Newton–Raphson in Higher Dimensions</h2>
+<p>Suppose now that <span class="math">\(f:\mathbb R^p\to\mathbb R\)</span> is twice differentiable and <span class="math">\(\boldsymbol\theta\in\mathbb R^p\)</span>. Write its gradient and Hessian as</p>
+<div class="math-small">\[
+\nabla f(\boldsymbol\theta)=\begin{pmatrix}\partial f/\partial\theta_1\\\vdots\\\partial f/\partial\theta_p\end{pmatrix},\qquad
+\nabla^2 f(\boldsymbol\theta)=\left[\frac{\partial^2f}{\partial\theta_i\partial\theta_j}\right]_{i,j=1}^p.
+\]</div>
+<p>At an interior stationary point, <span class="math">\(\nabla f(\boldsymbol\theta^\star)=0\)</span>. Apply the multivariate Taylor approximation to the gradient:</p>
+<div class="math-result">\[
+\underbrace{\nabla f(\boldsymbol\theta^\star)}_{\mathbf0}\approx\nabla f(\boldsymbol\theta_k)+\nabla^2f(\boldsymbol\theta_k)(\boldsymbol\theta^\star-\boldsymbol\theta_k).
+\]</div>
+<p>Define the Newton direction <span class="math">\(\mathbf d_k\)</span> by solving the linear system</p>
+\[\boxed{\nabla^2 f(\boldsymbol\theta_k)\mathbf d_k=-\nabla f(\boldsymbol\theta_k).}\]
+<p>The update is</p>
+\[\boxed{\boldsymbol\theta_{k+1}=\boldsymbol\theta_k+\mathbf d_k.}\]
+<p>If the Hessian is invertible, this is formally</p>
+\[\boldsymbol\theta_{k+1}=\boldsymbol\theta_k-\left[\nabla^2f(\boldsymbol\theta_k)\right]^{-1}\nabla f(\boldsymbol\theta_k).\]
+<div class="callout warn"><div class="label">In actual Python, solve the system</div>Use <code>np.linalg.solve(H, grad)</code>; do not explicitly compute <code>np.linalg.inv(H) @ grad</code>. Solving the linear system is typically more stable and efficient.</div>
+<p>For minimization, a positive-definite Hessian makes <span class="math">\(-H^{-1}\nabla f\)</span> a strict descent direction whenever the gradient is nonzero. For maximization, a negative-definite Hessian gives an ascent direction. If the Hessian is indefinite or singular, an unmodified Newton step may be unreliable.</p>
+
+<h2 id="ridge">9. Ridge Regression: Why Newton Needs Only One Step</h2>
+<p>We revisit the ridge objective introduced in Lecture 5:</p>
+\[\boxed{Q(\boldsymbol\beta)=\frac12\|\mathbf y-X\boldsymbol\beta\|_2^2+\frac{\lambda}{2}\|\boldsymbol\beta\|_2^2,\qquad\lambda>0.}\]
+<p>Its derivatives are</p>
+\[\nabla Q(\boldsymbol\beta)=(X^\top X+\lambda I_p)\boldsymbol\beta-X^\top\mathbf y,\qquad \nabla^2Q=X^\top X+\lambda I_p.\]
+<p>Substituting in Newton's iteration gives</p>
+<div class="math-small">\[
+\begin{aligned}
+\boldsymbol\beta_{k+1}
+&=\boldsymbol\beta_k-(X^\top X+\lambda I_p)^{-1}\left[(X^\top X+\lambda I_p)\boldsymbol\beta_k-X^\top\mathbf y\right]\\
+&=\boxed{(X^\top X+\lambda I_p)^{-1}X^\top\mathbf y=\widehat{\boldsymbol\beta}_{\mathrm{ridge}}}.
+\end{aligned}
+\]</div>
+<div class="callout good"><div class="label">Why this is a special case</div>Ridge is quadratic and its Hessian is constant and positive definite. Newton's quadratic approximation is therefore exact. With a full Newton step, the global minimizer is reached in a single iteration from <em>any</em> starting coefficient vector (in exact arithmetic).</div>
+<h3>9.1 Interactive 2D ridge example</h3>
+<p>Use the fixed design <span class="math">\(X=\bigl[(1,0),(1,1),(1,2),(1,3)\bigr]^\top\)</span> and response <span class="math">\(\mathbf y=(1,2,2,4)^\top\)</span>. Change the ridge penalty or the initial coefficient vector. The contours represent a positive-definite quadratic; the Newton arrow goes straight to its unique optimum.</p>
+<div class="interactive" id="ridge-lab-widget">
+ <div class="widget-heading"><b>2D ridge: one-step Newton</b><span class="mini">Contour levels of the objective above its minimum</span></div>
+ <div class="controls"><label>λ <input id="ridgeLam" type="range" min="0.2" max="5" step="0.1" value="1.5" /><span id="ridgeLamLabel">1.5</span></label>
+ <label>Initial β₀,₁ <input id="ridgeB0" type="number" min="-6" max="6" step="0.5" value="-1" /></label><label>Initial β₀,₂ <input id="ridgeB1" type="number" min="-6" max="6" step="0.5" value="4" /></label>
+ <button id="ridgeStep" type="button" class="primary">Take one Newton step</button><button id="ridgeReset" type="button" class="ghost">Reset</button></div>
+ <div class="metrics"><div><small>Starting β</small><b id="ridgeStartText">—</b></div><div><small>Exact β*</small><b id="ridgeSolution">—</b></div><div><small>Current β</small><b id="ridgeCurrent">—</b></div><div><small>Current Q − Q*</small><b id="ridgeGap">—</b></div></div>
+ <div class="plot-one"><canvas id="ridgePlot" width="1000" height="410" role="img" aria-label="Ridge objective contour plot and one-step Newton path"></canvas></div>
+ <p id="ridgeStatus" class="status" aria-live="polite">The initial point is displayed. Take one Newton step.</p>
+</div>
+
+
+<details class="code-details"><summary>Show full Python source code</summary><pre><code class="language-python" id="pyCode">&quot;&quot;&quot;MATH-224 Lecture 6: Newton-Raphson for likelihood optimization.
+
+
+Notes:
+  * Newton&#x27;s method does not generally have global-convergence guarantees.
+  * A convergence check on the increment alone does not prove a global optimum.
+&quot;&quot;&quot;
+from __future__ import annotations
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import digamma, polygamma, gammaln
+
+# ----------------------------------------------------------
+# 1. GAMMA(shape=alpha, rate=1) likelihood
+# ----------------------------------------------------------
+def gamma_ll(a: float, data: np.ndarray) -&gt; float:
+    if a &lt;= 0:
+        return -np.inf
+    n = len(data)
+    return (a - 1.0) * np.log(data).sum() - data.sum() - n * gammaln(a)
+
+
+def gamma_score(a: float, data: np.ndarray) -&gt; float:
+    return float(np.log(data).sum() - len(data) * digamma(a))
+
+
+def gamma_hessian(a: float, data: np.ndarray) -&gt; float:
+    return float(-len(data) * polygamma(1, a))
+
+
+def gamma_newton(data: np.ndarray, a0: float = 2.0,
+                 tol: float = 1e-9, max_iter: int = 60,
+                 safeguard: bool = True) -&gt; tuple[np.ndarray, str]:
+    &quot;&quot;&quot;Newton iteration with optional step-halving to keep a&gt;0 and improve ll.&quot;&quot;&quot;
+    if a0 &lt;= 0:
+        raise ValueError(&quot;Initial shape must be positive&quot;)
+    path = [float(a0)]
+    for _ in range(max_iter):
+        a = path[-1]
+        score, hess = gamma_score(a, data), gamma_hessian(a, data)
+        step = -score / hess
+        scale = 1.0
+        new_a = a + step
+        if safeguard:
+            for _ in range(60):
+                if new_a &gt; 0 and np.isfinite(new_a) and gamma_ll(new_a, data) &gt;= gamma_ll(a, data) - 1e-10:
+                    break
+                scale *= 0.5
+                new_a = a + scale * step
+            else:
+                return np.asarray(path), &quot;line search failed&quot;
+        elif new_a &lt;= 0 or not np.isfinite(new_a):
+            return np.asarray(path), &quot;left the positive parameter domain&quot;
+        path.append(float(new_a))
+        if abs(new_a - a) &lt;= tol * (1 + abs(a)):
+            return np.asarray(path), &quot;step tolerance reached&quot;
+    return np.asarray(path), &quot;maximum iterations reached&quot;
+
+
+def plot_gamma_samples() -&gt; None:
+    rng = np.random.default_rng(100)
+    true_alpha = 5.0
+    # Same demonstration as the R notes, with NumPy&#x27;s RNG.
+    datasets = {10: rng.gamma(shape=true_alpha, scale=1.0, size=10),
+                1000: rng.gamma(shape=true_alpha, scale=1.0, size=1000)}
+    for n, data in datasets.items():
+        path, status = gamma_newton(data, a0=2.0, safeguard=True)
+        grid = np.linspace(0.3, 10.0, 400)  # start above zero: Gamma shape &gt; 0
+        ll_per_obs = np.array([gamma_ll(a, data) / n for a in grid])
+        plt.figure(figsize=(7.6, 4.7))
+        plt.plot(grid, ll_per_obs, label=&quot;Log-likelihood / n&quot;)
+        plt.axvline(true_alpha, color=&quot;red&quot;, ls=&quot;--&quot;, label=&quot;Generating shape&quot;)
+        plt.axvline(path[-1], color=&quot;blue&quot;, ls=&quot;--&quot;, label=&quot;Computed MLE&quot;)
+        plt.plot(path, [gamma_ll(a, data) / n for a in path],
+                 &quot;o-&quot;, ms=4, label=&quot;Newton iterates&quot;)
+        plt.xlabel(r&quot;Shape $\alpha$&quot;)
+        plt.ylabel(r&quot;$\ell(\alpha)/n$&quot;)
+        plt.title(f&quot;Gamma likelihood: n={n}&quot;)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+        print(f&quot;Gamma n={n}: shape truth={true_alpha:.3f}, &quot;
+              f&quot;MLE={path[-1]:.6f}, iterations={len(path)-1}, {status}&quot;)
+
+
+# ----------------------------------------------------------
+# 2. CAUCHY(location=mu, scale=1) likelihood
+# ----------------------------------------------------------
+def cauchy_ll(mu: float, data: np.ndarray) -&gt; float:
+    r = data - mu
+    return float(-len(data) * np.log(np.pi) - np.log1p(r * r).sum())
+
+
+def cauchy_score(mu: float, data: np.ndarray) -&gt; float:
+    r = data - mu
+    return float((2.0 * r / (1.0 + r * r)).sum())
+
+
+def cauchy_hessian(mu: float, data: np.ndarray) -&gt; float:
+    r = data - mu
+    return float((2.0 * (r * r - 1.0) / (1.0 + r * r) ** 2).sum())
+
+
+def cauchy_newton(data: np.ndarray, mu0: float,
+                  tol: float = 1e-8, max_iter: int = 40) -&gt; tuple[np.ndarray, str]:
+    &quot;&quot;&quot;Raw Newton steps: deliberately show bad starts and nonconcavity.&quot;&quot;&quot;
+    path = [float(mu0)]
+    for _ in range(max_iter):
+        mu = path[-1]
+        score, hess = cauchy_score(mu, data), cauchy_hessian(mu, data)
+        if abs(hess) &lt; 1e-9:
+            return np.asarray(path), &quot;near-zero curvature (unsafe step)&quot;
+        next_mu = mu - score / hess
+        if not np.isfinite(next_mu) or abs(next_mu) &gt; 1e7:
+            return np.asarray(path), &quot;divergence / numerical overflow&quot;
+        path.append(float(next_mu))
+        if abs(next_mu - mu) &lt; tol:
+            kind = &quot;local maximum&quot; if cauchy_hessian(next_mu, data) &lt; 0 else &quot;not a local maximum&quot;
+            return np.asarray(path), f&quot;step tolerance reached; {kind}&quot;
+    return np.asarray(path), &quot;maximum iterations reached&quot;
+
+
+def plot_cauchy_examples() -&gt; None:
+    for seed in [1, 10, 33]:
+        rng = np.random.default_rng(seed)
+        data = 5 + rng.standard_cauchy(size=4)
+        grid = np.linspace(-10, 40, 1000)
+        vals = np.array([cauchy_ll(mu, data) for mu in grid])
+        plt.figure(figsize=(8, 4.8))
+        plt.plot(grid, vals, color=&quot;black&quot;, label=&quot;Cauchy log-likelihood&quot;)
+        for mu0, color, label in [(float(np.median(data)), &quot;blue&quot;, &quot;sample median&quot;),
+                                  (7.0, &quot;red&quot;, &quot;start = 7&quot;),
+                                  (19.0, &quot;green&quot;, &quot;start = 19&quot;)]:
+            path, status = cauchy_newton(data, mu0)
+            valid = path[(path &gt;= grid[0]) &amp; (path &lt;= grid[-1])]
+            plt.plot(valid, [cauchy_ll(mu, data) for mu in valid],
+                     &quot;o-&quot;, color=color, label=f&quot;{label}: {status}&quot;, alpha=.85)
+        plt.axvline(5, color=&quot;gray&quot;, ls=&quot;--&quot;, label=&quot;Generating location&quot;)
+        plt.xlabel(r&quot;Location $\mu$&quot;)
+        plt.ylabel(&quot;Log-likelihood&quot;)
+        plt.title(f&quot;Cauchy likelihood, n=4, NumPy seed={seed}&quot;)
+        plt.legend(fontsize=8)
+        plt.tight_layout()
+        plt.show()
+        print(f&quot;Cauchy seed={seed}, data={np.round(data, 3)}&quot;)
+
+
+# ----------------------------------------------------------
+# 3. RIDGE REGRESSION: one exact Newton step
+# ----------------------------------------------------------
+def ridge_newton_example() -&gt; None:
+    X = np.array([[1.0, 0.0], [1.0, 1.0],
+                  [1.0, 2.0], [1.0, 3.0]])
+    y = np.array([1.0, 2.0, 2.0, 4.0])
+    lam = 1.5  # includes penalty on both coefficients in this demonstration
+    start = np.array([-1.0, 4.0])
+    H = X.T @ X + lam * np.eye(X.shape[1])
+    grad = H @ start - X.T @ y
+    beta1 = start - np.linalg.solve(H, grad)  # use solve, not an explicit inverse
+    beta_star = np.linalg.solve(H, X.T @ y)
+    print(&quot;Ridge beta after 1 Newton step:&quot;, beta1)
+    print(&quot;Ridge analytic minimizer:      &quot;, beta_star)
+    print(&quot;Difference (numerical rounding):&quot;, np.linalg.norm(beta1 - beta_star))
+    assert np.allclose(beta1, beta_star)
+
+
+if __name__ == &quot;__main__&quot;:
+    plot_gamma_samples()
+    plot_cauchy_examples()
+    ridge_newton_example()
+</code></pre></details>
+<h3>10.1 Key Python commands</h3>
+<table><thead><tr><th>Computation</th><th>Python</th></tr></thead><tbody>
+<tr><td>Digamma function <span class="math">\(\psi(\alpha)\)</span></td><td><code>scipy.special.digamma(alpha)</code></td></tr>
+<tr><td>Trigamma function <span class="math">\(\psi_1(\alpha)\)</span></td><td><code>scipy.special.polygamma(1, alpha)</code></td></tr>
+<tr><td>Log Gamma <span class="math">\(\log\Gamma(\alpha)\)</span></td><td><code>scipy.special.gammaln(alpha)</code></td></tr>
+<tr><td>Solve the Newton linear system</td><td><code>np.linalg.solve(H, grad)</code></td></tr>
+<tr><td>Draw log-likelihood and Newton paths</td><td><code>matplotlib.pyplot</code></td></tr>
+</tbody></table>
+
+<h2 id="cautions">11. When Newton's Method Can Fail</h2>
+<table><thead><tr><th>Problem</th><th>What can happen</th><th>Possible remedy</th></tr></thead><tbody>
+<tr><td>Bad starting value</td><td>Converges to an unwanted stationary point</td><td>Use a sensible initialization; compare several starts</td></tr>
+<tr><td>Very small / zero second derivative</td><td>Huge or undefined step</td><td>Check curvature; damp or regularize the step</td></tr>
+<tr><td>Leaves the valid parameter domain</td><td>Likelihood cannot be evaluated</td><td>Backtracking / parameter transformation</td></tr>
+<tr><td>Nonconcave log-likelihood</td><td>Different local maxima or even local minima</td><td>Multiple starts and objective comparisons</td></tr>
+<tr><td>Singular / indefinite multivariate Hessian</td><td>Linear system fails or wrong direction</td><td>Modified Newton methods, line search, trust regions</td></tr>
+<tr><td>Stopping only because steps are small</td><td>False confidence in a solution</td><td>Check gradient, objective, and Hessian signs as well</td></tr>
+</tbody></table>
+<div class="callout warn"><div class="label">Correct reading of the convergence statement</div>Strict concavity guarantees that an <em>existing stationary point</em> is the unique global maximizer. It does <strong>not</strong> guarantee that raw Newton–Raphson reaches that point from an arbitrary start. With suitable regularity and a starting point sufficiently close to a nonsingular solution, Newton has rapid (typically quadratic) local convergence.</div>
+
+<h2 id="summary">12. Summary, Questions, and Practice</h2>
+<div class="summary"><h3>What students should remember</h3><ul>
+<li>Newton's method solves the stationary equation by locally linearizing the derivative.</li>
+<li>One-dimensional update: <span class="math">\(\theta_{k+1}=\theta_k-f'(\theta_k)/f''(\theta_k)\)</span>.</li>
+<li>Multivariate update: solve <span class="math">\(H_kd_k=-g_k\)</span>, then set <span class="math">\(\theta_{k+1}=\theta_k+d_k\)</span>.</li>
+<li>Gamma likelihood: strictly concave, unique sample MLE, no elementary closed form.</li>
+<li>Cauchy likelihood: can be nonconcave, so starting values and curvature matter.</li>
+<li>Ridge objective: quadratic, so a full Newton step reaches the minimizer exactly.</li>
+</ul></div>
+<div class="exercise"><div class="label">Tutorial / homework exercises</div><ol>
+<li>Derive Newton's update for maximizing <span class="math">\(f(\theta)=-\theta^4+2\theta^2\)</span>. Find the stationary points and classify them. Try starts near <span class="math">\(\theta=0\)</span> and <span class="math">\(\theta=2\)</span>.</li>
+<li>For the Gamma sample of size 10, compute the first two Newton updates from <span class="math">\(\alpha_0=2\)</span> using the Python functions. Explain why changing the sample size changes the MLE but not the Newton formula.</li>
+<li>For Cauchy data, compute <span class="math">\(\ell'(\mu)\)</span> and <span class="math">\(\ell''(\mu)\)</span> at several starting points. Why might <span class="math">\(\ell''(\mu)>0\)</span> be problematic for maximization?</li>
+<li>Implement the multivariate Newton iteration for unpenalized linear regression when <span class="math">\(X^\top X\)</span> is invertible. How many full Newton steps are needed?</li>
+<li>Explain why ridge's <span class="math">\(X^\top X+\lambda I\)</span> is always positive definite for <span class="math">\(\lambda>0\)</span>.</li>
+<li>Design a safeguarded Newton method that halves its step if it would leave the admissible parameter domain or reduce the log-likelihood.</li>
+</ol></div>
+<div class="callout key"><div class="label">Looking ahead</div>Newton uses curvature information through the Hessian. In the next method, <strong>gradient ascent/descent</strong>, we will see how to optimize using only first derivatives, and compare speed, computational cost, and stability.</div>
+<p class="small"> </p>
+
+</div>
+<script>
+(() => {
+  'use strict';
+  const DATA = {"gamma":{"10":[2.586121981346129,6.564911470250106,2.882694053442731,6.351914864522474,6.468316330957952,11.382481876851957,4.769399247956947,2.3319639275972004,3.330686017292345,5.769215689288207],"1000":[2.834245410787195,4.185033426363295,8.764480645843237,9.433836149263648,5.277875392613303,4.691593328042782,5.427716503027156,5.199535997291149,3.1111880685324347,3.3784521277731843,5.50651471733372,4.50077662600829,5.182084699697963,7.392344246003102,9.780641672286723,9.720769662438935,2.585135190297305,7.492309283839887,8.021692366054141,3.970449599069454,1.567696706953101,8.988623002159736,3.181045229685938,3.528284579475845,6.690834755687818,3.004623124842474,4.294235844178359,6.175388646927659,5.543575623509061,6.411989956917814,3.64752978235384,3.8821555185054675,7.644783878730346,5.739449034857345,5.0062778994387305,7.759581977468105,5.471186884455866,2.5357756522030206,2.6942906192242306,5.4239715771106125,5.039445086176901,6.024569336191548,7.410620590628409,8.190799470360298,5.210745749962784,3.613251834944043,5.85239803505801,4.768941174211648,4.032978421808669,10.313422601121765,8.763154686575263,7.785684567881156,3.2522168624164256,2.9357079638914128,4.5002319140725255,4.085093047735699,2.058049768489719,4.332539496539334,6.388576208806288,12.815747362035715,7.865457047164053,3.293088651301031,3.2627610592553764,5.19287680828159,5.685693527376115,8.350945382593675,3.609534378019626,8.577331058807589,3.53385638543371,2.7558875613410545,6.0497965137778245,3.318292919877537,8.063407434034344,11.651600023505086,2.616732722511981,5.619554227735162,6.2191331157555165,4.400641784201296,6.06028086274958,4.280505691108188,2.594675885149166,7.122461657460975,4.346281844500876,6.197830198017864,10.689213721437909,7.197727347147239,8.111149552540484,12.610682846444341,5.140821987145455,6.180497439100162,5.217548629495331,6.638924871133082,1.4879181996570279,4.3501066486159425,5.6710765060114445,5.572903273531467,2.9827384334681257,6.643974209386336,3.217753700344148,3.0109303551542697,5.547104161791243,8.808991720861163,2.677009443926053,5.0507537722085925,3.9582303366596228,3.7639902424837803,6.4492708840404775,4.02718799430595,5.588175265283921,3.2077442583623075,2.474481711713614,3.6282514653529705,2.291123755460711,3.751226980511519,4.415877754522319,2.763069925639426,5.569920030823915,7.987614196236482,2.380367919960704,4.327550045029957,2.385123245022089,4.280036906915331,2.450716044571904,6.1031040788939945,10.479550383185579,2.7208333941476717,7.557127252818417,6.324055769486133,3.426590618662525,2.478048065662952,2.7693254611496045,6.198093745975556,9.863621702024226,1.8835217484229416,4.294443578187081,3.5150810699669,4.187809570171095,2.920573160437577,3.544560307218094,8.699910252204429,2.6921510487718696,3.9251289620814243,2.342609704991766,4.292838191030609,5.013738131850753,4.769278993899808,5.950192399789355,3.4268551911429164,6.113185598231687,5.540633565322377,3.8378730191565604,5.845669022604167,4.05182509610657,4.562785076456189,2.3833571650122987,5.118076433615944,2.474063537492797,5.200102246023391,6.329703288860802,3.127384953898302,7.253015678271985,5.755734245666479,5.25623662525415,1.7735580020247947,4.069626029761144,5.542989569866423,3.9149924361234767,5.466670556722697,4.082848953176232,7.528116214298395,9.59544688906015,4.901228264146502,3.069190201783925,1.6138089571093117,6.375882021435702,9.163519207744999,2.439847812797116,2.6534759497391547,10.217559974487614,4.208373820879855,5.931938180991231,2.7368384110176858,6.823458226436394,6.73290758587179,2.189657929352954,8.514193978793871,5.674496916543027,3.0450781396787714,1.5793392680230574,3.5928732666924956,8.450007178455186,7.449078339147296,5.559149943530365,7.527485323767935,1.2836022534893532,3.6313390603720936,3.207914790127544,5.015556597562849,10.587587747235483,3.6836199659399145,5.836840712050805,5.24597881458425,3.6664762402847417,4.543359556200837,2.245711089109363,4.0179580027205315,4.031713344212507,2.9734813431480447,5.854933446594946,3.9219341193192125,5.7962528502207595,4.35349181349586,9.344682676880055,2.2983279726455472,8.000135212066539,4.360829447202595,5.059623940399662,6.978258049244231,12.414589967995196,14.165148050710041,8.72345854150898,6.766214768278386,4.426126611886334,4.816625457334498,6.080310390827072,3.2928014370746257,4.847129063861152,7.3783731104886,5.887384818066517,4.6145703956329145,2.5280793419587395,3.008979737114426,1.0936188716928077,6.690155538511731,1.572358153824279,5.020569176743984,3.8453838834259657,5.025488461772382,7.060898371125298,3.0410614015704516,2.2234058098701728,3.3469736563961683,4.988099564804457,6.12375806535821,3.816889318840401,3.889868369744167,10.747451474268175,6.79967476233847,2.3934465793127324,3.4551247887901853,5.6889780080610945,10.775589492343439,4.958262421544959,3.4297864138803233,6.012347477227973,6.105783724877616,4.306009294129692,7.3421490701301595,2.282554546606988,5.932060702853746,2.9975890470951456,6.348497511698271,8.076856837948593,8.191891008127326,3.8915244784463026,5.968294534924365,4.1236692606447605,14.55871098169322,4.150542219068564,7.246679653114631,8.326912329305982,6.117642604416134,2.687087459361066,3.3057015985130027,3.4636242555489374,5.81124543943825,6.568440014999466,1.5789352616623058,4.8382335378181525,3.4915571450270555,8.358712940180945,4.248014788857319,8.160829279585288,2.8819505982334515,4.86632461038284,4.306703528108098,2.8303138356967636,8.782375901271784,6.823552732871175,2.302717809366548,2.441193771010145,10.052463354219753,4.7188201447397535,3.4647835688637567,6.09878834353304,6.954850331221269,4.473081863786242,8.093144007627679,3.2349185083591694,5.376798796990617,2.2435536029275225,2.517544666986986,3.995339200786669,7.102438288053831,3.9223207091424523,4.575284965025693,6.261226636913272,3.1424622160003506,1.1543652474298456,4.35119865758921,11.558473379665399,3.4247610911625337,4.0320103263174625,5.642211946459967,7.725990261792239,7.037709740429708,2.0972645816162045,3.771965806022115,4.792590446313135,2.832518958059928,6.1114624454766115,3.590743900887184,4.7000201606409,5.32148003197191,3.0839667782562596,8.293439112733147,4.2281609855307645,6.413125481419275,4.159812093381063,5.457513541769033,3.849643889715355,4.497759093473629,5.168163829215013,5.082316274623108,5.533930503415356,5.063890750104805,7.787326675709382,2.083142021957939,5.733505017382105,5.299616133262766,1.9773975604569132,5.462149233645425,6.727899254413634,7.715643224871877,5.717878296055506,4.619211730939301,3.799663702671159,4.478631016551727,2.7040884580708044,6.563907751354797,7.8478365370348095,3.8724693678599196,2.897023355888687,0.8396937857367535,7.709747915072064,4.985254750330321,4.691494867102017,3.309860021939251,2.8580367373362807,3.78948341313122,3.6275596640143966,4.009105355342112,6.055957939043042,4.526110268802253,5.478868090093249,4.709229014307064,5.31856903504828,6.467045377780056,3.7119655883697944,2.7805335491336045,11.436042287002174,6.511021218100203,5.387301348494219,4.825277585346647,4.268452140183878,3.582849738597954,8.022064515915488,9.137258422955973,2.6745691085700494,4.089902871239894,6.560798989555491,4.374457606062389,2.6365820544098306,4.744069471661789,2.943349681303131,3.3494326674406896,4.518007138253568,7.696094909462943,5.663014089914615,3.1063252494325386,7.038137438603991,7.176757809663119,5.800029172538652,2.8384541533916945,4.370298509263961,7.925991104298117,5.961053100242924,6.856843959699507,9.850292150525398,4.806628539671705,9.063400764453927,5.4675614451254475,6.743175039159029,2.9058378854894364,6.418317790159954,3.201469871078501,2.5760940670416907,3.8811272201464306,5.4104816126639825,3.240604387030805,3.6854561092497287,4.000141786458856,7.844006244576874,9.172725437721928,7.231231228165582,5.2564926302241535,4.427198152811031,4.985535551930603,7.180558300865095,8.937403876282989,8.49507603357913,3.555628838458723,8.708110886351673,3.165087989484158,4.913110146596216,2.447203528192409,4.778498778725041,11.63528670008424,5.9400871285842,1.468648006198851,5.9174617030211145,5.437084613310266,8.820979120588975,3.6277811058028764,3.7571861125669264,5.426537552376191,4.2768335579701136,5.4402349450877665,4.455360905042987,8.814327082079876,3.2347793665159315,4.976527402059951,3.9979069654492942,3.9330204946962906,8.521735385941684,4.153864840150512,4.438697336167895,2.8749188343413485,7.5602141276856765,5.63258409341763,5.943960886477554,6.004382164404255,2.8069826808922946,6.134088900155621,4.65982605894442,3.7070908922436145,7.189189838004693,6.980364314726566,5.330749826096382,6.144370036269885,7.795587602288496,3.2969672748673617,6.4786975223958105,9.590080691584191,13.070104535605163,6.88106678812838,6.973155166530295,2.3040633825696704,6.342843316803316,4.188500746663991,5.109236908718122,4.04045834866053,7.90145528428019,6.1999721556346366,4.882910354594751,7.833269514885466,2.655909815503578,3.6806751319937994,5.700848205492498,2.704804662726258,4.260862579159174,4.94855081100037,3.2183007452966943,6.803041486627125,4.4524667281733725,4.217430815154196,3.5345318502671454,3.2952002946760897,3.3760281111666286,3.617847823217768,4.561139449759081,3.4751644452372714,1.6936509004582143,7.47083137234706,5.770655308117945,4.699849685350077,5.95458588813702,8.529080448643805,2.3695357264413444,1.2027170055830567,4.620980610182598,8.305840665022487,6.3413210684654695,2.2043303767850553,5.176548331158956,9.262535773983048,2.1211033122358973,7.889370730472165,4.997968083285604,5.317122397298822,4.1489924624306145,3.6696318417026568,4.802425826547658,3.0316687174800725,2.6249555609598403,3.5188597139172653,3.847291440369316,2.4551461168291513,10.6623101284007,3.868945968975313,5.1422139272232625,3.9342877883712966,3.7884730049428597,4.0676955228925,5.877343212406575,7.530424432221894,1.8126976562601012,7.0685507266468335,3.425612215719163,4.3398857430266045,7.140350521692813,7.392862597312202,4.3524937173501925,4.090001951277985,5.437695398736113,4.6430202287113085,4.927704604440592,4.242073388259046,6.780615581374299,7.2765000670569435,2.413930553008574,2.8991432401045514,3.223225292506833,3.437302574195658,4.442595770272998,4.262585743579291,4.188409365566215,2.2990571609639283,5.799816471204617,3.486550052811729,9.23074849182503,3.5106805292158705,4.014052717643401,5.291878545470901,7.792564202882849,3.701070837107614,3.3405722243762486,8.404120403643942,3.541226903489348,3.9290030320987173,4.364469474531055,2.9386672474754927,3.845890597420958,4.302345749560371,3.442918618227935,2.7255771307156675,1.2704853438935433,2.9441710682649873,3.005308831341881,4.201969768042228,7.7573473300955715,4.944385123318053,3.0402603651959073,9.534388867901587,6.420227538051308,8.48202138097278,2.4085918506292825,8.641418509616184,8.793849369340055,5.567916570794172,6.170373904845312,4.1005776194518395,6.633829895157613,1.7935402945718961,6.108607616020774,3.681394741984291,2.02299108406191,7.180956917556509,9.174462751226333,7.836344709943627,2.2688919564688246,2.1956020472261346,6.168685695450302,2.2302304267981516,7.043597412799136,2.4707788202459717,8.473257240216608,8.921357906387744,5.1836789886737735,1.3913240585508364,2.8023914551669997,2.216156156791155,4.758607733077341,4.819579878835854,5.8772789616551915,5.14215938247889,2.064287108677906,4.753866723746764,4.9576241574702475,10.157908653922064,4.8902743472745245,6.663642102804218,3.684329023170101,2.211481591353913,4.833395099860156,5.865002357213178,4.388239205205557,4.327145212275591,3.4259854147182662,3.5379836618510896,5.600440414687621,3.8773002125759977,4.949586849979292,3.7462235753105113,3.372304416523748,3.5794423992832085,4.955902556360878,2.979694115239594,3.5885692457110165,9.054147276198593,3.115370014794648,6.742304644758969,3.8534807412749332,5.029455164669101,4.1374611890749105,3.2526646469825633,6.408719271742043,2.0448170135539105,5.3301986778512465,5.513570400233947,5.3918839828170135,3.5897599087724035,5.166859075128931,4.726169058324943,6.04119312373205,5.48698743414973,4.7529014901618165,6.509571610285769,4.030152153634069,9.915672507139734,5.153953798841156,2.334453998420007,4.573497096949931,9.076297850341291,4.563337843350629,5.036144361011396,5.868043804620789,5.384142217920416,6.578766321435329,4.508309003394847,6.582044454576127,3.6588295648253406,4.926172562713095,3.868975521163893,3.727259969563538,5.63667775599902,7.923900461098748,2.9203876309128955,5.899402879164965,5.488535983321673,7.755650297620076,3.3782731284126695,9.162266069181795,4.065333117641139,11.966806814620929,3.1508408616010373,8.191712930890906,3.87405671797459,1.6992972050047594,4.425709199814518,4.220014603442097,9.01898224125661,3.5631189601730053,1.8382237955169671,4.615445824082761,6.733106447178504,6.530426142788652,5.222054971919666,7.040334467030723,7.077451913769478,4.093367411259763,4.017138176276251,3.2477179518290216,3.676739318265758,2.779651519494784,2.281204501078143,3.3939998386624097,2.454194448161783,1.884969846033691,13.95655125543908,3.7701272414359224,1.4220605095974412,2.3359482135291345,3.6174493541309998,3.478952531519587,2.7541883985664595,3.9503231526314737,8.105885835381601,5.269396059853703,4.041991153561815,5.603199652342545,6.429299319504435,3.0580305988268974,2.797371526877099,6.438972332430341,3.1163124561859044,6.29940703020153,2.4363321584878253,3.798560718243804,4.7159325638086225,5.83998753115557,2.845204730939586,4.816516379669996,4.173954172489743,4.1000099883309975,8.010152501604002,3.772955374751849,3.898308734701128,4.9589890237037615,5.0001746787681265,3.7378048829874535,2.1807875577956795,4.1579730676566395,4.787387790296205,7.651076183446272,2.687804709518311,2.996141961180059,2.0455801898023105,5.527788592349576,5.290139872802494,3.092648944484139,9.127857350334619,2.6794220430920443,4.060542537716397,3.466761896819223,5.85195251950791,2.209020513963219,3.1791065926619186,6.8265725812989535,8.103828787591803,5.406363449321628,6.383377462127346,5.123645650676474,4.3202694779410695,2.8557120365895776,3.89843316164108,3.1840533887551707,4.941748787843846,6.038116882716922,3.1650186916343204,4.5577207077579,2.7471663627301646,3.105132768020704,4.886878341838463,8.534002609136165,3.0135999939898594,5.334025929550483,8.282889766555833,4.664912070151154,7.096865842215796,2.7533770094087675,5.155064454548884,4.50348019826067,6.684052242605378,8.616405901851685,2.460285476088667,9.20744058028461,2.7875583500824876,4.969231275406227,4.759596491050312,6.1873415876963564,1.6649848403711212,6.410073963816471,4.001099778394994,3.1936042005923775,3.5853763501807605,4.500853517583428,3.5262576151868035,4.267490509297911,3.227026293971267,4.503318527198177,10.08624340951709,6.741235520645914,4.881124884348518,4.63163300227376,4.0678001465164755,2.702631282120393,3.8735201244519395,5.4609535990554745,6.595493021943709,5.195419514239919,9.647711518544192,3.492686700575543,4.39725723526893,5.956163342035525,4.96662297911203,4.1291330233921,4.443189581471809,7.150008206826838,0.9480970580624355,3.7996565541111913,8.643302019035044,4.260200980656884,7.426007559399112,6.620520131351319,5.648529744318785,6.496645795660331,4.652396357917346,1.2818188559656534,1.9767973190727288,3.839488486730538,1.4942911642508239,5.489887945171105,5.694091295494462,4.094626122656399,6.955167101423127,3.8831089285654095,7.542712464089564,7.174884918283271,2.7754718035850927,2.807979248688536,4.6949149062014275,4.379040462089442,8.699274033356325,3.4717664988775,2.6474220858792297,5.8012570383796955,2.4478682590931644,6.503021397093927,4.47587817475189,3.03516492870758,1.7273603598620035,5.087836145241651,3.4282336551371935,1.0674329673088983,6.026137235336097,5.329979274852847,3.3246135699307486,2.26892759775453,8.88560736594759,6.885933795459695,2.7265370870845387,5.25431553181513,9.181414721861321,6.033380815414406,3.6916900069094325,2.490689219641366,11.686914601642338,9.2006250567108,5.6519063931731734,10.42493345901014,2.2855645831284286,6.5001295708272355,8.384487555247178,4.595045535161743,4.0153782382389,4.711362398802479,2.7602228692059527,7.298402805514362,2.7358435473244156,4.617970245194715,9.440130702119529,2.747385272965878,6.903137049887427,4.420355675832524,4.7630869886759735,5.936809960486881,4.696617765234725,9.415612297157265,2.5888075529366716,9.922057302865888,2.939087326070633,5.601066104982714,3.562059814015258,4.103929295185541,4.349888111037527,15.404916661850354,5.216308156883258,2.822213434269223,3.4802971217983423,3.733141577966815,3.9073899288888843,4.371971203459354,10.489048879326667,4.63711533548169,4.676699391816871,5.875806986064979,4.122363658622729,4.458625218992933,7.976003542985949,4.496149582760317,4.386074323996206,4.6135879587452555,3.308591512025816,6.616063515846334,5.494745047440568,2.6961718661701837,6.142101371642756,4.874780327981282,6.489814239029285,9.632972749244542,8.442369559396074,5.588290806367414,6.353493233242125,2.1380010473835735,3.119585084743922,5.316010739560239,5.378257880117524,5.886033537267084,2.7602849036498616,5.169618759316325,2.690118374485007,7.1949262917553884,3.412604550666792,1.6451691624089242,3.9717528262737103,2.0838534735186784,3.987875302477988,3.4009164036739317,2.9826772538014055,5.335960599612961,5.016193681694393,5.724588020669285,2.6207071035412173,3.6415688881746693,8.098067856669527,4.442891943184506,4.791231653359151,6.176698080313321,2.079522961347261,5.181259557771624,2.489789523939667,9.407679040999339,6.711365153664512,6.015242486982511,2.5955740458847214,3.0609231215270514,7.771205388016509,5.154670020755251,1.8986056618119735,7.755043890578718,4.7178339156744915,4.424389570140164,5.684443046781059,7.471799737610725,5.46699693659518,3.9261455149892743,4.746703229854973,6.125100625655921,2.4137044768527076,3.726295924366133,2.570900292781176,2.7061170840790614,5.449950948029828,3.4330003258485067,4.091835989793834,3.7861822716529336,2.0742584569307283,8.075803421818668,8.848647902582302,2.8761271119258565,7.713354328524709,3.5920227479524,8.033687342505008,5.334360291251438,4.058750703059399,6.382840524191419,2.338844616360228,3.1528747212000057,1.496580217871898,4.978996790307788,4.584522609416495,6.022171089261265,3.326835731660984,6.742897463566184,5.040632497073315,10.37986655100563,4.058061924106124,1.8837280202003892,5.106856718917853,4.491173420610115,10.649913964493376,5.9657253784941044,1.5817996356930173,5.2181316427523745,4.208380176434838,4.259798229406262,9.58716779573041,2.5226097646661434,4.707306521099628]},"cauchy":{"1":[5.420614119586197,4.746433455480599,7.028242473307405,4.0759998157296184],"10":[6.521794416109147,2.0716256223441873,3.0346716301701333,5.9826397666814275],"33":[4.292193587615139,18.9805666117722,3.431694633892464,4.842084802914498]}};
+  const $ = id => document.getElementById(id);
+  const nfmt = (v, d=4) => Number.isFinite(v) ? v.toFixed(d) : '—';
+  const safeNum = (v, fallback) => Number.isFinite(Number(v)) ? Number(v) : fallback;
+
+  // Lanczos approximation and asymptotic digamma / trigamma: all used only on alpha>0.
+  const lanczos = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.6150291621406, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  function logGamma(z) {
+    if (!(z>0) || !Number.isFinite(z)) return NaN;
+    if (z<0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI*z)) - logGamma(1-z);
+    z-=1; let x=lanczos[0];
+    for(let i=1;i<lanczos.length;i++) x+=lanczos[i]/(z+i);
+    const t=z+7.5;
+    return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);
+  }
+  function digamma(x) {
+    if (!(x>0)) return NaN;
+    let res=0;
+    while(x<8){res-=1/x; x+=1;}
+    const r=1/x, r2=r*r;
+    return res+Math.log(x)-0.5*r-r2*(1/12-r2*(1/120-r2*(1/252-r2*(1/240))));
+  }
+  function trigamma(x) {
+    if(!(x>0)) return NaN;
+    let res=0;
+    while(x<8){res+=1/(x*x);x+=1;}
+    const r=1/x, r2=r*r;
+    return res+r+0.5*r2+(r2*r)*(1/6-r2*(1/30-r2*(1/42-r2*(1/30-r2*(5/66)))));
+  }
+  function range(a,b,n) {return Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));}
+
+  // Lightweight, dependency-free canvas plotter. All coordinates are explicit.
+  function plotFrame(canvas, lim, xlabel, ylabel) {
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+    const b={l:77,r:25,t:24,bot:56},pw=W-b.l-b.r,ph=H-b.t-b.bot;
+    const sx=x=>b.l+(x-lim.xmin)/(lim.xmax-lim.xmin)*pw;
+    const sy=y=>H-b.bot-(y-lim.ymin)/(lim.ymax-lim.ymin)*ph;
+    ctx.fillStyle='#fbfdff'; ctx.fillRect(b.l,b.t,pw,ph);
+    ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
+    ctx.font='14px Segoe UI, Arial, sans-serif';
+    ctx.fillStyle='#64748b'; ctx.textAlign='center';
+    for(let i=0;i<=5;i++){
+      const xv=lim.xmin+(lim.xmax-lim.xmin)*i/5,px=sx(xv);
+      ctx.beginPath();ctx.moveTo(px,b.t);ctx.lineTo(px,H-b.bot);ctx.stroke();
+      ctx.fillText(Number(xv.toFixed(1)).toString(),px,H-b.bot+20);
+    }
+    ctx.textAlign='right';
+    for(let i=0;i<=4;i++){
+      const yv=lim.ymin+(lim.ymax-lim.ymin)*i/4,py=sy(yv);
+      ctx.beginPath();ctx.moveTo(b.l,py);ctx.lineTo(W-b.r,py);ctx.stroke();
+      ctx.fillText(yv.toFixed(1),b.l-11,py+5);
+    }
+    ctx.strokeStyle='#334155'; ctx.lineWidth=1.5; ctx.strokeRect(b.l,b.t,pw,ph);
+    ctx.font='16px Segoe UI, Arial, sans-serif'; ctx.fillStyle='#334155';ctx.textAlign='center';
+    ctx.fillText(xlabel,b.l+pw/2,H-8);
+    ctx.save();ctx.translate(20,b.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(ylabel,0,0);ctx.restore();
+    // Restrict data lines to plot rectangle (no spill into axis labels).
+    ctx.save();ctx.beginPath();ctx.rect(b.l,b.t,pw,ph);ctx.clip();
+    return {ctx,sx,sy,W,H,done:()=>ctx.restore()};
+  }
+  function curve(P, xs, f, color='#1d4ed8', width=3, dash=[]) {
+    const {ctx,sx,sy}=P;
+    ctx.beginPath();let prev=false;
+    for(const x of xs){const y=f(x);
+      if(!Number.isFinite(y)){prev=false;continue;}
+      const px=sx(x),py=sy(y);
+      if(!prev)ctx.moveTo(px,py);else ctx.lineTo(px,py);prev=true;
+    }
+    ctx.setLineDash(dash);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.setLineDash([]);
+  }
+  function marker(P,x,y,color,rad=6) {if(!Number.isFinite(x)||!Number.isFinite(y))return;
+    const {ctx,sx,sy}=P; ctx.beginPath();ctx.arc(sx(x),sy(y),rad,0,2*Math.PI);ctx.fillStyle=color;ctx.fill();
+    ctx.strokeStyle='white';ctx.lineWidth=1.4;ctx.stroke();
+  }
+  function vline(P,x,color,dash=[6,5],width=2){curve(P,[x,x],()=>0,color,width,dash);}
+  function vertical(P,x,color){const{ctx,sx,sy}=P;ctx.beginPath();ctx.moveTo(sx(x),sy(-1e6));ctx.lineTo(sx(x),sy(1e6));ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);}
+  function pointLine(P, vals, fn, color='#0f766e'){
+    if(!vals.length)return;
+    const{ctx,sx,sy}=P;ctx.beginPath();
+    vals.forEach((v,i)=>{const y=fn(v);if(i===0)ctx.moveTo(sx(v),sy(y));else ctx.lineTo(sx(v),sy(y));});
+    ctx.lineWidth=2;ctx.strokeStyle=color;ctx.stroke();
+    vals.forEach((v,i)=>marker(P,v,fn(v),i===vals.length-1?'#0f766e':'#f59e0b',6));
+  }
+
+  const gammaSets = {};
+  for(const key of ['10','1000']){
+    const x=DATA.gamma[key];
+    gammaSets[key]={n:x.length,sumLog:x.reduce((a,v)=>a+Math.log(v),0),sumX:x.reduce((a,v)=>a+v,0)};
+  }
+  const gLL=(a,D) => a>0 ? -D.n*logGamma(a)+(a-1)*D.sumLog-D.sumX : -Infinity;
+  const gScore=(a,D) => D.sumLog-D.n*digamma(a);
+  const gHess=(a,D) => -D.n*trigamma(a);
+  function gammaMLE(D){let a=Math.max(.01,D.sumX/D.n);for(let k=0;k<50;k++){
+    const h=gHess(a,D), s=gScore(a,D), step=-s/h;let t=1,next=a+step;
+    while((!Number.isFinite(next)||next<=0)&&t>1e-12){t*=.5;next=a+t*step;}
+    if(!(next>0))break;
+    if(Math.abs(next-a)<1e-12)break;
+    a=next;
+  }return a;}
+  let gs={path:[],steps:[],status:'Ready.',ended:false};
+  function gammaD(){return gammaSets[$('gammaN').value];}
+  function gReset(){
+    const a=safeNum($('gammaStart').value,2);
+    if(!(a>0) || a>100){$('gammaStatus').textContent='Choose a positive initial α no greater than 100.';return;}
+    gs={path:[a],steps:[],status:'Ready. Advance the Newton step.',ended:false};renderGamma();
+  }
+  function gStep(){if(gs.ended)return;
+    const D=gammaD(),a=gs.path.at(-1),s=gScore(a,D),h=gHess(a,D);
+    if(!Number.isFinite(h)||Math.abs(h)<1e-14){gs.status='Curvature is too small.';gs.ended=true;renderGamma();return;}
+    const step=-s/h;let t=1,b=a+step;
+    if($('gammaSafe').checked){for(let j=0;j<56;j++){
+        if(b>0&&Number.isFinite(b)&&gLL(b,D)>=gLL(a,D)-1e-9)break;
+        t*=0.5;b=a+t*step;
+      }
+    }
+    if(!(b>0)||!Number.isFinite(b)||b>1e5){gs.status='Stopped: raw step left the valid domain (α>0), or diverged. Try safeguarded Newton.';gs.ended=true;renderGamma();return;}
+    gs.steps.push({a,s:s/D.n,h:h/D.n,b,t});gs.path.push(b);
+    if(Math.abs(b-a)<1e-9*(1+Math.abs(a))){gs.status='Step tolerance reached. Check the score and estimate.';gs.ended=true;}
+    else if(gs.steps.length>=30){gs.status='Maximum displayed iterations reached.';gs.ended=true;}
+    else gs.status='Step '+gs.steps.length+' accepted'+(t<1?' (step length '+nfmt(t,3)+').':'.');
+    renderGamma();
+  }
+  function gammaRenderPlot(D,mle){
+    const gPlot=plotFrame($('gammaPlot'),{xmin:.3,xmax:10,ymin:-2.7,ymax:.20},'Shape α','(ℓ(α) − ℓ(MLE)) / n');
+    const base=gLL(mle,D)/D.n,fn=a=>gLL(a,D)/D.n-base;
+    curve(gPlot,range(.3,10,320),fn);
+    vertical(gPlot,5,'#dc2626');vertical(gPlot,mle,'#15803d');
+    pointLine(gPlot,gs.path.filter(a=>a>=.3&&a<=10),fn);
+    gPlot.done();
+    const S=plotFrame($('gammaScorePlot'),{xmin:.3,xmax:10,ymin:-1.8,ymax:2.3},'Shape α','Score ℓ′(α) / n');
+    const fn2=a=>gScore(a,D)/D.n;
+    curve(S,range(.3,10,320),fn2);
+    curve(S,[.3,10],()=>0,'#64748b',1.7,[4,3]);
+    const a=gs.path.at(-1),score=fn2(a),curv=gHess(a,D)/D.n;
+    curve(S,range(Math.max(.3,a-2),Math.min(10,a+2),60),x=>score+curv*(x-a),'#dc2626',2.5,[5,4]);
+    marker(S,a,score,'#dc2626',6);
+    const root=a-score/curv; if(root>=.3&&root<=10)marker(S,root,0,'#7c3aed',6);
+    S.done();
+  }
+  function renderGamma(){if(!gs.path.length)return;
+    const D=gammaD(),a=gs.path.at(-1),mle=gammaMLE(D);
+    $('gammaCurrent').textContent=nfmt(a,5);$('gammaMLE').textContent=nfmt(mle,5);
+    $('gammaScore').textContent=nfmt(gScore(a,D)/D.n,5);$('gammaCount').textContent=gs.steps.length;
+    $('gammaStatus').textContent=gs.status+`  Generating α=5; |MLE−5| = ${nfmt(Math.abs(mle-5),4)}.`;
+    const rows=gs.steps.map((x,i)=>`<tr><td>${i}</td><td>${nfmt(x.a,6)}</td><td>${nfmt(x.s,6)}</td><td>${nfmt(x.h,6)}</td><td>${nfmt(x.b,6)}${x.t<.999?' (damped)':''}</td></tr>`);
+    $('gammaRows').innerHTML=rows.join('') || '<tr><td colspan="5">Advance an iteration to see the numerical updates.</td></tr>';
+    gammaRenderPlot(D,mle);
+  }
+  $('gammaStep').addEventListener('click',gStep);
+  $('gammaRun').addEventListener('click',()=>{for(let i=0;i<30&&!gs.ended;i++)gStep();});
+  $('gammaReset').addEventListener('click',gReset);
+  for(const id of ['gammaN','gammaStart','gammaSafe'])$(id).addEventListener('change',gReset);
+
+  // Cauchy log-likelihood and derivatives from the uploaded R source.
+  const cLL=(mu,x)=>-x.length*Math.log(Math.PI)-x.reduce((a,v)=>a+Math.log1p((v-mu)*(v-mu)),0);
+  const cS=(mu,x)=>x.reduce((a,v)=>{let r=v-mu;return a+2*r/(1+r*r);},0);
+  const cH=(mu,x)=>x.reduce((a,v)=>{let r=v-mu;return a+2*(r*r-1)/Math.pow(1+r*r,2);},0);
+  const cData=()=>DATA.cauchy[$('cauchySeed').value];
+  function median(xs){const s=[...xs].sort((a,b)=>a-b),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;}
+  let cs={path:[],status:'Ready.',ended:false};
+  function cReset(){
+    const mode=$('cauchyStartMode').value,x=cData();
+    $('cauchyCustom').disabled=mode!=='custom';
+    let start=mode==='median'?median(x):mode==='custom'?safeNum($('cauchyCustom').value,7):Number(mode);
+    if(!Number.isFinite(start)){start=median(x);}
+    cs={path:[start],status:'Ready. Press “Next iteration” and observe the trajectory.',ended:false};renderCauchy();
+  }
+  function cStep(){if(cs.ended)return;
+    const x=cData(),mu=cs.path.at(-1),sc=cS(mu,x),h=cH(mu,x);
+    if(!Number.isFinite(h)||Math.abs(h)<1e-9){cs.status='Stopped: Hessian nearly zero (Newton step undefined or unstable).';cs.ended=true;renderCauchy();return;}
+    const next=mu-sc/h;
+    if(!Number.isFinite(next)||Math.abs(next)>1e5){cs.status='Stopped: divergence / very large proposed jump.';cs.ended=true;renderCauchy();return;}
+    cs.path.push(next);
+    if(Math.abs(next-mu)<1e-8){
+      cs.status=cH(next,x)<0?'Stationary point reached; local maximum (not necessarily global).':'Stationary point reached, but NOT a local maximum (curvature nonnegative).';cs.ended=true;
+    }else if(cs.path.length>=31){cs.status='Iteration limit reached; no convergence guaranteed.';cs.ended=true;}
+    else cs.status='Iteration '+(cs.path.length-1)+'. '+(cH(next,x)>0?'Local curvature is positive: Newton may target a minimum.':'Local curvature is negative.');
+    renderCauchy();
+  }
+  function renderCauchy(){if(!cs.path.length)return;
+    const x=cData(),mu=cs.path.at(-1),s=cS(mu,x),h=cH(mu,x);
+    $('cauchyCurrent').textContent=nfmt(mu,5);$('cauchyScore').textContent=nfmt(s,5);
+    $('cauchyHessian').textContent=nfmt(h,5);$('cauchyCount').textContent=cs.path.length-1;
+    $('cauchyStatus').textContent=cs.status;
+    $('cauchyData').textContent='Observed data (rounded): '+x.map(v=>nfmt(v,3)).join(', ')+'. Gray dashed: generating μ = 5; amber circles: iteration history.';
+    const xs=range(-10,40,1000),ys=xs.map(v=>cLL(v,x)),top=Math.max(...ys),bottom=top-18;
+    const P=plotFrame($('cauchyPlot'),{xmin:-10,xmax:40,ymin:bottom,ymax:top+1},'Location μ','Log-likelihood ℓ(μ)');
+    curve(P,xs,z=>cLL(z,x),'#111827',3);vertical(P,5,'#64748b');
+    const path=cs.path.filter(z=>z>=-10&&z<=40);
+    pointLine(P,path,z=>cLL(z,x),'#dc2626');
+    P.done();
+    const rows=cs.path.slice(-12).map((v,i)=>{const k=cs.path.length-Math.min(12,cs.path.length)+i;
+      return `<tr><td>${k}</td><td>${nfmt(v,5)}</td><td>${nfmt(cS(v,x),5)}</td><td>${nfmt(cH(v,x),5)}</td><td>${cH(v,x)<0?'local concavity':'positive curvature'}</td></tr>`;});
+    $('cauchyRows').innerHTML=rows.join('');
+  }
+  $('cauchyStep').addEventListener('click',cStep);
+  $('cauchyRun').addEventListener('click',()=>{for(let i=0;i<30&&!cs.ended;i++)cStep();});
+  $('cauchyReset').addEventListener('click',cReset);
+  for(const id of ['cauchySeed','cauchyStartMode','cauchyCustom'])$(id).addEventListener('change',cReset);
+
+  // Ridge: H = X'X+lambda I and b=X'y for 4 observations and 2 coefficients.
+  const X=[[1,0],[1,1],[1,2],[1,3]],y=[1,2,2,4];
+  const A=X.reduce((v,z)=>v+z[0]*z[0],0),B=X.reduce((v,z)=>v+z[0]*z[1],0),D=X.reduce((v,z)=>v+z[1]*z[1],0);
+  const by=[0,1].map(j=>X.reduce((s,z,i)=>s+z[j]*y[i],0));
+  let rs={start:[-1,4],current:[-1,4],moved:false};
+  const ridgeLam=()=>Number($('ridgeLam').value);
+  function ridgeH(){return [[A+ridgeLam(),B],[B,D+ridgeLam()]];}
+  function solve2(M,z){const det=M[0][0]*M[1][1]-M[0][1]*M[1][0];return [(z[0]*M[1][1]-z[1]*M[0][1])/det,(M[0][0]*z[1]-M[1][0]*z[0])/det];}
+  const ridgeOpt=()=>solve2(ridgeH(),by);
+  const ridgeGap=(bet)=>{const o=ridgeOpt(),H=ridgeH(),u=bet[0]-o[0],v=bet[1]-o[1];return .5*(H[0][0]*u*u+2*H[0][1]*u*v+H[1][1]*v*v);};
+  function ridgeReset(){
+    $('ridgeLamLabel').textContent=nfmt(ridgeLam(),1);
+    const b0=safeNum($('ridgeB0').value,-1),b1=safeNum($('ridgeB1').value,4);
+    rs={start:[b0,b1],current:[b0,b1],moved:false};renderRidge();
+  }
+  function ellipse(P,H,opt,level,color){
+    const a=H[0][0],b=H[0][1],d=H[1][1],ang=.5*Math.atan2(2*b,a-d);
+    const delta=Math.sqrt((a-d)*(a-d)+4*b*b),e1=(a+d+delta)/2,e2=(a+d-delta)/2;
+    const r1=Math.sqrt(2*level/e1),r2=Math.sqrt(2*level/e2);
+    const ca=Math.cos(ang),sa=Math.sin(ang);
+    const{ctx,sx,sy}=P;ctx.beginPath();for(let i=0;i<=240;i++){
+      const t=2*Math.PI*i/240,u=r1*Math.cos(t),v=r2*Math.sin(t),x=opt[0]+ca*u-sa*v,y=opt[1]+sa*u+ca*v;
+      if(i===0)ctx.moveTo(sx(x),sy(y));else ctx.lineTo(sx(x),sy(y));
+    }
+    ctx.strokeStyle=color;ctx.lineWidth=1.7;ctx.stroke();
+  }
+  function renderRidge(){
+    const opt=ridgeOpt(),cur=rs.current,H=ridgeH(),start=rs.start;
+    $('ridgeStartText').textContent=`(${nfmt(start[0],2)}, ${nfmt(start[1],2)})`;
+    $('ridgeSolution').textContent=`(${nfmt(opt[0],3)}, ${nfmt(opt[1],3)})`;
+    $('ridgeCurrent').textContent=`(${nfmt(cur[0],3)}, ${nfmt(cur[1],3)})`;
+    $('ridgeGap').textContent=nfmt(ridgeGap(cur),6);
+    $('ridgeStatus').textContent=rs.moved?'One full Newton step reaches the unique global minimizer (up to rounding).':'The initial point is shown. Change λ or the start, then take one Newton step.';
+    const P=plotFrame($('ridgePlot'),{xmin:-4.5,xmax:5.5,ymin:-2.5,ymax:6.5},'First coefficient β₁','Second coefficient β₂');
+    [0.5,1.5,3.5,7,12,24,40,70].forEach((v,i)=>ellipse(P,H,opt,v,i%2?'#bfdbfe':'#93c5fd'));
+    marker(P,opt[0],opt[1],'#16a34a',8);
+    if(rs.moved){const{ctx,sx,sy}=P;ctx.strokeStyle='#ea580c';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx(start[0]),sy(start[1]));ctx.lineTo(sx(opt[0]),sy(opt[1]));ctx.stroke();}
+    marker(P,start[0],start[1],'#ea580c',7);
+    P.done();
+  }
+  $('ridgeStep').addEventListener('click',()=>{
+    const H=ridgeH(),g=[H[0][0]*rs.current[0]+H[0][1]*rs.current[1]-by[0],H[1][0]*rs.current[0]+H[1][1]*rs.current[1]-by[1]];
+    const dir=solve2(H,g);rs.current=[rs.current[0]-dir[0],rs.current[1]-dir[1]];rs.moved=true;renderRidge();
+  });
+  $('ridgeReset').addEventListener('click',ridgeReset);
+  for(const id of ['ridgeLam','ridgeB0','ridgeB1']) $(id).addEventListener(id==='ridgeLam'?'input':'change',ridgeReset);
+
+  $('downloadPy').addEventListener('click',()=>{
+    const source=$('pyCode').textContent;
+    const blob=new Blob([source],{type:'text/x-python;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a');
+    link.href=url;link.download='MATH224_Lecture6_Newton_Python_Examples.py';
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+  });
+  $('copyPy').addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText($('pyCode').textContent);$('copyResult').textContent='Copied.';}
+    catch(_){$('copyResult').textContent='Select and copy the code below (clipboard permission unavailable).';}
+  });
+  gReset();cReset();ridgeReset();
+})();
+
+</script>
+</body>
+</html>

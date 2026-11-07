@@ -1,0 +1,777 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Introduction to Optimization (MATH-224) - Lecture 7</title>
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{
+  --ink:#1f2937; --muted:#6b7280; --accent:#1d4ed8; --accent-soft:#eff6ff;
+  --green:#166534; --green-soft:#f0fdf4; --amber:#92400e; --amber-soft:#fffbeb;
+  --red:#991b1b; --red-soft:#fef2f2; --purple:#6b21a8; --purple-soft:#faf5ff;
+  --border:#d1d5db; --bg:#ffffff; --panel:#f9fafb; --blue:#006b7d; --lecture:#9b2c14;
+}
+*{box-sizing:border-box;} html{scroll-behavior:smooth;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,Helvetica,sans-serif;line-height:1.68;}
+.wrap{max-width:1100px;margin:0 auto;padding:42px 30px 72px;}
+.lecture-header{margin-bottom:30px;padding-bottom:18px;border-bottom:3px solid var(--accent);}
+.lecture-header h1{margin:0;color:#111827;font-size:2.28rem;line-height:1.2;font-weight:700;}
+.lecture-header .subtitle{margin-top:8px;color:#374151;font-size:1.22rem;}
+.lecture-header .byline{margin-top:6px;color:var(--muted);font-size:1.06rem;}
+h2{font-size:1.58rem;line-height:1.25;color:#111827;margin-top:2em;border-left:5px solid var(--accent);padding-left:12px;}
+h3{font-size:1.22rem;color:#111827;margin-top:1.55em;} h4{font-size:1.05rem;color:#111827;margin-top:1.35em;}
+p{margin:.68em 0;} ul,ol{padding-left:1.45rem;} li{margin:.35em 0;} a{color:var(--accent);text-decoration:none;}
+.toc{border:1px solid var(--border);background:#fbfdff;border-radius:14px;padding:18px 22px;margin:22px 0 28px;}
+.toc h3{margin-top:0}.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 34px;}
+.callout{border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:18px 0;background:var(--panel);}
+.key{background:var(--accent-soft);border-color:#bfdbfe}.good{background:var(--green-soft);border-color:#bbf7d0}
+.warn{background:var(--amber-soft);border-color:#fde68a}.danger{background:var(--red-soft);border-color:#fecaca}
+.note{background:#eef6ff;border-color:#c9dcfb}.purple{background:var(--purple-soft);border-color:#e9d5ff}
+.label{font-weight:700;margin-bottom:6px}
+.theorem{border-left:5px solid var(--purple);background:var(--purple-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.proposition{border-left:5px solid var(--green);background:var(--green-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.definition{border-left:5px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:15px 18px;margin:19px 0;}
+.example{border-left:5px solid var(--lecture);background:#fffaf7;border-radius:8px;padding:15px 18px;margin:19px 0;}
+.exercise{border:1px dashed #f59e0b;background:#fffdf5;border-radius:10px;padding:15px 18px;margin:19px 0;}
+.math-result{background:var(--panel);padding:14px 18px;border-radius:10px;border:1px solid var(--border);margin:16px 0;}
+.summary{border:2px solid #bfdbfe;background:#f8fbff;border-radius:14px;padding:20px;margin-top:34px;}
+.small{color:var(--muted);font-size:.93rem}.step{border-left:3px solid #cbd5e1;padding-left:16px;margin:14px 0;}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.98rem;}
+th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top;}th{background:#f3f4f6;font-weight:700;}
+.figure-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0 10px;align-items:start;}
+.figure-card{border:1px solid var(--border);border-radius:10px;background:white;padding:14px;}
+.figure-card > svg{width:100%;height:auto;display:block}.caption{color:var(--blue);font-size:1rem;margin-top:8px;}
+.bridge{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0;}
+.bridge .box{border:1px solid var(--border);border-radius:10px;padding:12px 10px;background:#fff;text-align:center;font-size:.94rem;}
+.bridge .now{border-color:#93c5fd;background:#eff6ff;font-weight:700;}
+mjx-container[jax="SVG"]{font-size:.98em!important}mjx-container[jax="SVG"][display="true"]{font-size:.96em!important;margin:.78em 0!important;max-width:100%;overflow-x:auto;overflow-y:hidden}
+mjx-container[jax="SVG"] svg{max-width:100%}.math-small mjx-container[jax="SVG"][display="true"]{font-size:.89em!important}
+@media(max-width:800px){.figure-grid,.toc-grid,.bridge{grid-template-columns:1fr}.wrap{padding:24px 16px 50px}.lecture-header h1{font-size:1.8rem}}
+@media print{.wrap{max-width:none;padding:15mm}h2{page-break-after:avoid}table,.callout,.theorem,.proposition,.definition,.example,.math-result,.figure-card{page-break-inside:avoid}.toc a{color:inherit;text-decoration:none}}
+
+/* Interactive teaching widgets, deliberately consistent with the Lecture 5 design. */
+.interactive{margin:22px 0;padding:18px;border:1px solid #cbd5e1;border-radius:14px;background:#fbfdff;}
+.widget-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 18px;margin-bottom:14px;font-size:1.08rem;}
+.mini{font-size:.85rem;color:#64748b;}
+.controls{display:flex;align-items:end;gap:10px 14px;flex-wrap:wrap;margin:14px 0;}
+.controls label{font-size:.89rem;font-weight:600;display:flex;flex-direction:column;gap:5px;}
+.controls label.checklabel{flex-direction:row;align-items:center;gap:8px;padding-bottom:8px;}
+.controls input[type=number],.controls select{padding:8px 10px;border:1px solid #94a3b8;border-radius:7px;background:white;color:#172033;font-size:.95rem;min-width:98px;max-width:150px;}
+.controls input[type=range]{width:145px;accent-color:#1d4ed8;}
+.controls button,.code-actions button{border:1px solid #1d4ed8;background:#eff6ff;color:#1d4ed8;cursor:pointer;border-radius:7px;padding:9px 13px;font-weight:700;white-space:nowrap;}
+.controls button.primary{background:#1d4ed8;color:white;}
+.controls button.ghost{background:white;border-color:#94a3b8;color:#334155;}
+.controls button:hover,.code-actions button:hover{filter:brightness(.95);}
+.controls button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px;}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 18px;}
+.metrics>div{background:#f1f5f9;padding:11px 12px;border-radius:9px;min-width:0;}
+.metrics small{display:block;font-size:.82rem;color:#475569;}
+.metrics b{font-size:1.13rem;display:block;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+.plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.plot-grid canvas,.plot-one canvas{width:100%;height:auto;background:white;border:1px solid #cbd5e1;border-radius:8px;display:block;}
+.plot-grid .caption,.plot-one + .caption{font-size:.85rem;line-height:1.48;margin:7px 0 10px;}
+.status{font-size:.95rem;background:#eff6ff;border-left:3px solid #1d4ed8;padding:9px 12px;border-radius:5px;}
+.table-scroll{max-width:100%;overflow-x:auto;}
+.iter-table{font-size:.82rem;margin:10px 0;}
+.iter-table th,.iter-table td{padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.center{text-align:center;color:#475569;margin:0;}
+.code-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:15px 0;}
+.download-link{display:inline-block;padding:9px 13px;background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;border-radius:7px;font-weight:700;cursor:pointer;}
+.code-details{border:1px solid #cbd5e1;border-radius:8px;margin:12px 0;}
+.code-details summary{padding:12px 16px;cursor:pointer;font-weight:700;background:#f1f5f9;}
+.code-details pre{font-size:.81rem;line-height:1.45;overflow-x:auto;max-height:650px;margin:0;padding:18px;background:#0f172a;color:#e2e8f0;white-space:pre;}
+code{font-family:Consolas,Monaco,monospace;font-size:.91em;}
+@media(max-width:900px){.plot-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.metrics{grid-template-columns:1fr 1fr}.interactive{padding:11px}.controls label{width:auto}}
+@media print{.controls,.code-actions{display:none}.interactive{break-inside:avoid}.code-details:not([open]) pre{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="lecture-header">
+<h1>Introduction to Optimization (MATH-224) - Lecture 7</h1>
+<div class="subtitle">Gradient Ascent and Gradient Descent: From Likelihoods to Logistic Regression</div>
+<div class="byline">by Tanujit Chakraborty</div>
+</header>
+<div class="callout key"><div class="label">Where we are in the course</div>
+In Lecture 5 we formulated maximum-likelihood estimation as optimization. In Lecture 6, Newton–Raphson used both the score and the curvature to find an optimum. <strong>What if the Hessian is expensive, singular, or difficult to compute?</strong> We now construct a first-order method that uses only the gradient. We will study a nonconcave Cauchy likelihood and finish with logistic regression, providing a direct bridge to the upcoming Regression course.</div>
+<div class="bridge">
+<div class="box">Lectures 1–2<br/><b>Calculus &amp; Hessians</b></div>
+<div class="box">Lectures 3–4<br/><b>LP &amp; convexity</b></div>
+<div class="box">Lecture 5<br/><b>Likelihood &amp; ridge</b></div>
+<div class="box">Lecture 6<br/><b>Newton–Raphson</b></div>
+<div class="box now">Lecture 7<br/><b>Gradient methods</b></div>
+</div>
+<div class="toc"><h3>Lecture roadmap</h3><div class="toc-grid">
+<a href="#motivation">1. Why another algorithm after Newton?</a>
+<a href="#derivation">2. Derive gradient ascent from a local model</a>
+<a href="#descent">3. Gradient descent and the steepest direction</a>
+<a href="#steps">4. The learning rate and convergence</a>
+<a href="#quadratic-lab">5. Interactive experiment: a convex quadratic</a>
+<a href="#cauchy">6. Worked example: Cauchy likelihood</a>
+<a href="#cauchy-lab">7. Interactive experiment: Cauchy ascent</a>
+<a href="#dimensions">8. Extension to several variables</a>
+<a href="#logistic">9. Logistic regression as an optimization problem</a>
+<a href="#logistic-lab">10. Interactive logistic regression</a>
+<a href="#python">11. Python practical and notebook corrections</a>
+<a href="#summary">12. Summary, limitations, and exercises</a>
+</div></div>
+
+<h2 id="motivation">1. Why Do We Need Another Algorithm?</h2>
+<p>For a differentiable objective <span class="math">\(f(\theta)\)</span>, Newton's method (Lecture 6) uses a second-order Taylor approximation. Its one-dimensional update is</p>
+\[
+\theta_{k+1}=\theta_k-\frac{f'(\theta_k)}{f''(\theta_k)}.
+\]
+<p>For a vector parameter, this becomes</p>
+\[
+\boldsymbol\theta_{k+1}=\boldsymbol\theta_k-
+[\nabla^2 f(\boldsymbol\theta_k)]^{-1}\nabla f(\boldsymbol\theta_k).
+\]
+<div class="callout warn"><div class="label">Newton–Raphson is powerful, but it has limitations</div>
+<ul><li>For high-dimensional problems, constructing the Hessian and solving a linear system can be expensive.</li><li>If the Hessian is singular or indefinite, the raw Newton direction may be undefined or may fail to improve the objective.</li><li>In nonconvex/nonconcave problems, the starting value can strongly influence the result. Even strict concavity does <em>not</em> guarantee convergence of undamped Newton from every start.</li></ul>
+</div>
+<p>This motivates <strong>gradient methods</strong>: use first derivatives only. The trade-off is that gradient methods may need more iterations, and their performance depends heavily on the <em>step size</em>.</p>
+<table><thead><tr><th>Method</th><th>Information per iteration</th><th>Typical update</th></tr></thead><tbody>
+<tr><td>Newton–Raphson</td><td>Gradient + Hessian</td><td>\(\theta_{k+1}=\theta_k-f'(\theta_k)/f''(\theta_k)\)</td></tr>
+<tr><td>Gradient ascent</td><td>Gradient only</td><td>\(\theta_{k+1}=\theta_k+t f'(\theta_k)\)</td></tr>
+<tr><td>Gradient descent</td><td>Gradient only</td><td>\(\theta_{k+1}=\theta_k-t f'(\theta_k)\)</td></tr>
+</tbody></table>
+
+<h2 id="derivation">2. Deriving Gradient Ascent from a Local Model</h2>
+<p>Suppose our aim is to <strong>maximize</strong> a differentiable function \(f(\theta)\). Near the current point \(\theta_k\), the second-order Taylor expansion is</p>
+\[
+f(\theta)\approx f(\theta_k)+f'(\theta_k)(\theta-\theta_k)
++\frac12 f''(\theta_k)(\theta-\theta_k)^2.
+\]
+<p>In the spirit of your notes, instead of computing \(f''(\theta_k)\), we construct a <em>concave quadratic surrogate</em> with a chosen curvature \(-1/t\), where \(t>0\):</p>
+<div class="math-result">
+\[
+q_k(\theta)=f(\theta_k)+f'(\theta_k)(\theta-\theta_k)
+-\frac{1}{2t}(\theta-\theta_k)^2.
+\]
+</div>
+<div class="callout note"><div class="label">What is the approximation doing?</div>The linear term follows the local slope of \(f\). The negative quadratic term prevents us from jumping infinitely far along that slope. The positive number \(t\) controls how far the next step can move. This is a <em>model we choose</em>, not an assertion that the true Hessian is exactly \(-1/t\).</div>
+<p>Maximize the easy function \(q_k\) by setting its derivative to zero:</p>
+\[
+\frac{dq_k}{d\theta}=f'(\theta_k)-\frac{\theta-\theta_k}{t}=0.
+\]
+<p>Solving for its maximizer produces the next iterate:</p>
+<div class="proposition"><div class="label">Gradient-ascent update</div>
+\[
+\boxed{\theta_{k+1}=\theta_k+t f'(\theta_k),\qquad t>0.}
+\]
+The method moves in the direction of <strong>increasing</strong> the objective. If \(f'(\theta_k)>0\), move right; if \(f'(\theta_k)&lt;0\), move left.</div>
+<h3>2.1 The algorithm</h3>
+<ol><li>Choose an initial point \(\theta_0\) and step size \(t>0\).</li><li>Compute the slope \(f'(\theta_k)\).</li><li>Update \(\theta_{k+1}=\theta_k+t f'(\theta_k)\).</li><li>Repeat until the gradient is sufficiently small, the step is sufficiently small, or a maximum iteration count is reached.</li></ol>
+<div class="callout warn"><div class="label">Stopping safely</div>A small change \(|\theta_{k+1}-\theta_k|\) does not always certify optimality, especially if \(t\) is tiny. Check both the gradient and whether the objective has stabilized. Also limit the number of iterations.</div>
+
+<h2 id="descent">3. Gradient Descent and the Steepest Direction</h2>
+<p>If the problem is to <strong>minimize</strong> \(F(\theta)\) rather than maximize \(f(\theta)\), apply ascent to \(-F\). This changes the plus sign into a minus sign:</p>
+<div class="proposition"><div class="label">Gradient-descent update</div>
+\[
+\boxed{\theta_{k+1}=\theta_k-t F'(\theta_k),\qquad t>0.}
+\]
+In several dimensions,
+\[
+\boxed{\mathbf x_{k+1}=\mathbf x_k-t\nabla F(\mathbf x_k).}
+\]
+</div>
+<h3>3.1 Why the negative gradient?</h3>
+<p>For a differentiable \(F\), moving from \(\mathbf x\) in a unit direction \(\mathbf d\) has first-order change</p>
+\[
+F(\mathbf x+\varepsilon\mathbf d)\approx F(\mathbf x)+
+\varepsilon\nabla F(\mathbf x)^\top\mathbf d.
+\]
+<p>By the Cauchy–Schwarz inequality, among unit directions the most negative directional derivative occurs at</p>
+\[
+\boxed{\mathbf d=-\frac{\nabla F(\mathbf x)}{\|\nabla F(\mathbf x)\|_2}},
+\quad \nabla F(\mathbf x)\ne\mathbf0.
+\]
+<p>Thus \(-\nabla F\) is the direction of steepest <em>local</em> decrease in Euclidean geometry. The step size still determines <em>how far</em> to travel.</p>
+<div class="callout key"><div class="label">Connection to maximum likelihood</div>
+If \(\ell(\theta)\) is a log-likelihood and \(F(\theta)=-\ell(\theta)\), then
+\[
+\underbrace{\theta_{k+1}=\theta_k+t\ell'(\theta_k)}_{\text{maximize log-likelihood}}
+\quad\Longleftrightarrow\quad
+\underbrace{\theta_{k+1}=\theta_k-tF'(\theta_k)}_{\text{minimize negative log-likelihood}}.
+\]
+They are two views of the same algorithm.</div>
+
+<h2 id="steps">4. Step Size: When Does Gradient Descent Work?</h2>
+<p>A gradient tells us the right <em>local direction</em>, not the right distance. To see why step size matters, minimize</p>
+\[
+F(x)=\frac12(x-1)^2,
+\qquad F'(x)=x-1.
+\]
+<p>The descent update is</p>
+\[
+x_{k+1}=x_k-t(x_k-1).
+\]
+<p>Subtract the minimizer \(x^*=1\):</p>
+\[
+x_{k+1}-1=(1-t)(x_k-1)
+\quad\Longrightarrow\quad
+x_k-1=(1-t)^k(x_0-1).
+\]
+<div class="math-result">Thus the iterates converge to \(1\) exactly when \(\boxed{0&lt;t&lt;2}\) for this particular quadratic. For \(t=1\), convergence occurs in one step; for \(1&lt;t&lt;2\), the iterates oscillate while approaching the minimum; for \(t>2\), the iterates diverge.</div>
+<h3>4.1 A general sufficient step-size condition</h3>
+<p>If \(F\) has an \(L\)-Lipschitz gradient, meaning that</p>
+\[\|\nabla F(\mathbf x)-\nabla F(\mathbf y)\|_2\le L\|\mathbf x-\mathbf y\|_2,\]
+<p>then it obeys the <strong>descent lemma</strong>:</p>
+\[
+F(\mathbf y)\le F(\mathbf x)+\nabla F(\mathbf x)^\top(\mathbf y-\mathbf x)
++\frac{L}{2}\|\mathbf y-\mathbf x\|_2^2.
+\]
+<p>Substitute \(\mathbf y=\mathbf x-t\nabla F(\mathbf x)\):</p>
+\[
+F(\mathbf x_{k+1})\le F(\mathbf x_k)-t\left(1-\frac{Lt}{2}\right)
+\|\nabla F(\mathbf x_k)\|_2^2.
+\]
+<p>Consequently, any \(0&lt;t&lt;2/L\) guarantees a decrease whenever the gradient is nonzero. This does not by itself promise convergence to a finite global optimizer without additional assumptions. For a convex objective and standard smoothness/solution assumptions, appropriate fixed steps yield convergence in objective value.</p>
+
+<h2 id="quadratic-lab">5. Interactive Experiment A — Gradient Descent on a Quadratic</h2>
+<p>Use the controls to change the step size, then watch the numerical iterates move along \(F(x)=\frac12(x-1)^2\). The second plot tracks the objective at each iterate.</p>
+<div class="interactive" id="quadLab">
+<div class="widget-heading"><b>Explore how the learning rate changes convergence</b><span class="mini">Interactive · no Python required</span></div>
+<div class="controls">
+<label>Initial point x₀<input id="qStart" type="number" value="5" min="-8" max="10" step="0.5"></label>
+<label>Step size t<input id="qRate" type="range" min="0.1" max="2.6" step="0.1" value="0.4"><span id="qRateValue">0.4</span></label>
+<button class="ghost" id="qReset">Reset</button><button id="qStep">One iteration</button><button class="primary" id="qRun">Run 18 iterations</button>
+</div>
+<div class="metrics"><div><small>Current x</small><b id="qCurrent">5.000</b></div><div><small>Objective F(x)</small><b id="qLoss">8.000</b></div><div><small>Gradient F′(x)</small><b id="qGrad">4.000</b></div><div><small>Iterations</small><b id="qIter">0</b></div></div>
+<div class="plot-grid"><div><canvas id="qPlot" width="720" height="390" aria-label="Quadratic function with gradient-descent iterates"></canvas><div class="caption">Quadratic objective, with the current iterate and visited points.</div></div><div><canvas id="qHistory" width="720" height="390" aria-label="Objective value by iteration"></canvas><div class="caption">Objective value as a function of iteration.</div></div></div>
+<p class="status" id="qStatus" aria-live="polite">Choose a step size and advance the algorithm.</p>
+</div>
+
+<h2 id="cauchy">6. Worked Example: Gradient Ascent for a Cauchy Likelihood</h2>
+<p>Return to the nonconcave Cauchy model from Lecture 6. For independent observations from a Cauchy distribution with location \(\mu\) and scale \(1\),</p>
+\[
+f(x\mid\mu)=\frac{1}{\pi[1+(x-\mu)^2]}.
+\]
+<p>The log-likelihood for observations \(x_1,\ldots,x_n\) is</p>
+\[
+\boxed{\ell(\mu)=-n\log\pi-\sum_{i=1}^n\log(1+(x_i-\mu)^2).}
+\]
+<p>Differentiate with respect to \(\mu\):</p>
+\[
+\boxed{\ell'(\mu)=2\sum_{i=1}^{n}\frac{x_i-\mu}{1+(x_i-\mu)^2}.}
+\]
+<p>Unlike Newton's method, <strong>gradient ascent uses only this score</strong>. With step size \(t>0\),</p>
+<div class="proposition"><div class="label">Cauchy location update</div>
+\[
+\boxed{\mu_{k+1}=\mu_k+2t\sum_{i=1}^n\frac{x_i-\mu_k}{1+(x_i-\mu_k)^2}.}
+\]
+</div>
+<p>A sensible starting value is the <strong>sample median</strong>, because the Cauchy mean is undefined. Nevertheless, different starts can converge to different stationary points because the finite-sample log-likelihood need not be concave.</p>
+<div class="callout warn"><div class="label">What a student should notice</div>
+<ul><li>Gradient ascent with a sufficiently small step can increase the log-likelihood near a point with nonzero score.</li><li>With a large step, it may overshoot, oscillate, or decrease the log-likelihood.</li><li>For a nonconcave objective, convergence to a stationary point does not certify the global MLE. Compare final likelihood values across starts.</li></ul>
+</div>
+
+<h2 id="cauchy-lab">7. Interactive Experiment B — Cauchy Location and Starting Values</h2>
+<p>To make the multiple local peaks visible, this interactive example uses the <strong>fixed illustrative sample</strong> \(x=(3.4,4.7,5.5,16.5)\); it is not claimed to be an exact replay of R's random seed. Compare the median start with starts near \(7\) and \(19\), and try \(t=0.3\) versus \(t=1\).</p>
+<div class="interactive" id="cauchyLab">
+<div class="widget-heading"><b>Nonconcave likelihood: the importance of initialization</b><span class="mini">Illustrative sample · gradient ascent</span></div>
+<div class="controls">
+<label>Start at<input id="cStart" type="select" hidden><select id="cChoice"><option value="median">Sample median</option><option value="7">μ₀ = 7</option><option value="19">μ₀ = 19</option><option value="16">μ₀ = 16</option><option value="custom">Custom value</option></select></label>
+<label>Custom μ₀<input id="cCustom" type="number" value="10" step="0.5" min="-30" max="40"></label>
+<label>Step size t<select id="cRate"><option value="0.1">0.1</option><option value="0.3" selected>0.3</option><option value="0.6">0.6</option><option value="1">1.0</option><option value="1.5">1.5</option></select></label>
+<button id="cReset" class="ghost">Reset</button><button id="cStep">One iteration</button><button id="cRun" class="primary">Run 40 iterations</button>
+</div>
+<div class="metrics"><div><small>Current μ</small><b id="cCurrent">—</b></div><div><small>Log-likelihood ℓ(μ)</small><b id="cLoss">—</b></div><div><small>Score ℓ′(μ)</small><b id="cScore">—</b></div><div><small>Iterations</small><b id="cIter">0</b></div></div>
+<div class="plot-grid"><div><canvas id="cPlot" width="720" height="390" aria-label="Cauchy log likelihood curve with ascent iterations"></canvas><div class="caption">The black curve is the log-likelihood; colored points show successive iterates.</div></div><div><canvas id="cHistory" width="720" height="390" aria-label="Cauchy log-likelihood by iteration"></canvas><div class="caption">Log-likelihood values over iterations: nonmonotonicity signals a step size that is too aggressive.</div></div></div>
+<p class="status" id="cStatus" aria-live="polite">Select a starting value and a step size.</p>
+</div>
+
+<h2 id="dimensions">8. Gradient Methods in Higher Dimensions</h2>
+<p>Now let the parameter be \(\boldsymbol\theta=(\theta_1,\ldots,\theta_p)^\top\). The first-order Taylor expansion is</p>
+\[
+f(\boldsymbol\theta_k+\mathbf d)\approx f(\boldsymbol\theta_k)+\nabla f(\boldsymbol\theta_k)^\top\mathbf d.
+\]
+<p>Choose a concave quadratic local model for maximization:</p>
+\[
+q_k(\boldsymbol\theta_k+\mathbf d)=f(\boldsymbol\theta_k)
++\nabla f(\boldsymbol\theta_k)^\top\mathbf d-\frac{1}{2t}\|\mathbf d\|_2^2.
+\]
+<p>Differentiate with respect to \(\mathbf d\), set it to zero, and obtain \(\mathbf d=t\nabla f(\boldsymbol\theta_k)\). Hence,</p>
+<div class="math-result">
+\[
+\boxed{\begin{aligned}
+\text{Gradient ascent: } &\boldsymbol\theta_{k+1}=\boldsymbol\theta_k+t\nabla f(\boldsymbol\theta_k),\\
+\text{Gradient descent: } &\boldsymbol\theta_{k+1}=\boldsymbol\theta_k-t\nabla F(\boldsymbol\theta_k).
+\end{aligned}}
+\]
+</div>
+<div class="callout note"><div class="label">A practical choice: sum versus average</div>
+Likelihood derivatives often sum over all \(n\) observations. For code, it is frequently convenient to optimize the <em>average negative log-likelihood</em>. This divides the gradient by \(n\) but leaves its minimizer unchanged. The effective learning rate then has a more stable scale across datasets. The Python and interactive logistic example below use the average objective; the mathematical score displayed next uses the original sum.</div>
+
+<h2 id="logistic">9. Logistic Regression: A Likelihood We Cannot Solve Explicitly</h2>
+<h3>9.1 Why not use linear regression for a binary response?</h3>
+<p>Suppose \(Y_i\in\{0,1\}\). Linear regression can produce predictions below \(0\) or above \(1\), which cannot be interpreted as probabilities. Logistic regression instead models</p>
+\[
+\Pr(Y_i=1\mid\mathbf x_i)=p_i=\sigma(\eta_i),\qquad
+\sigma(z)=\frac{1}{1+e^{-z}},\qquad
+\eta_i=\beta_0+\mathbf x_i^\top\boldsymbol\beta.
+\]
+<p>The <strong>sigmoid</strong> maps every real score \(\eta_i\) into the interval \((0,1)\). It also makes the log-odds linear:</p>
+\[
+\boxed{\log\frac{p_i}{1-p_i}=\beta_0+\mathbf x_i^\top\boldsymbol\beta.}
+\]
+<div class="figure-grid"><div class="figure-card">
+<svg viewBox="0 0 450 275" aria-label="sigmoid curve"><line x1="35" y1="225" x2="425" y2="225" stroke="#334155" stroke-width="2"/><line x1="220" y1="260" x2="220" y2="18" stroke="#334155" stroke-width="2"/><line x1="35" y1="35" x2="425" y2="35" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,5"/><line x1="35" y1="130" x2="425" y2="130" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5,5"/>
+<path d="M45 222 C105 221 152 206 185 170 C204 150 214 136 220 130 C235 111 257 81 290 55 C325 36 366 35 412 35" fill="none" stroke="#dc2626" stroke-width="4"/><circle cx="220" cy="130" r="5" fill="#1d4ed8"/><text x="17" y="41" font-size="17">1</text><text x="8" y="135" font-size="17">0.5</text><text x="420" y="244" font-size="17">z</text><text x="244" y="118" font-size="16">σ(0)=0.5</text></svg>
+<div class="caption">The sigmoid transforms an unrestricted linear score into a valid probability.</div>
+</div><div class="figure-card">
+<svg viewBox="0 0 450 275" aria-label="linear logistic classification boundary"><line x1="35" y1="225" x2="425" y2="225" stroke="#334155" stroke-width="2"/><line x1="220" y1="260" x2="220" y2="18" stroke="#334155" stroke-width="2"/><path d="M65 45 L360 235" stroke="#475569" stroke-dasharray="7,6" stroke-width="3" fill="none"/><g fill="#2563eb"><circle cx="290" cy="75" r="6"/><circle cx="335" cy="100" r="6"/><circle cx="260" cy="52" r="6"/><circle cx="365" cy="150" r="6"/></g><g fill="#dc2626"><circle cx="75" cy="176" r="6"/><circle cx="110" cy="215" r="6"/><circle cx="145" cy="168" r="6"/><circle cx="160" cy="221" r="6"/></g><text x="260" y="255" font-size="16">β₀ + β₁x₁ + β₂x₂ = 0</text></svg>
+<div class="caption">When \(p=0.5\), the linear score is zero, giving a straight decision boundary in two dimensions.</div>
+</div></div>
+<h3>9.2 Likelihood and log-likelihood</h3>
+<p>Assume conditional independence and \(Y_i\mid\mathbf x_i\sim\mathrm{Bernoulli}(p_i)\). Then</p>
+\[
+L(\boldsymbol\beta)=\prod_{i=1}^{n}p_i^{y_i}(1-p_i)^{1-y_i}.
+\]
+<p>Include an intercept in an augmented predictor \(\widetilde{\mathbf x}_i=(1,\mathbf x_i^\top)^\top\) and in \(\widetilde{\boldsymbol\beta}=(\beta_0,\boldsymbol\beta^\top)^\top\). To simplify notation, write \(X\) for the augmented design matrix and \(\beta\) for the complete coefficient vector. Using \(\eta_i=\mathbf x_i^\top\boldsymbol\beta\),</p>
+<div class="math-result math-small">
+\[
+\boxed{\ell(\boldsymbol\beta)=\sum_{i=1}^{n}\left[y_i\eta_i-\log(1+e^{\eta_i})\right].}
+\]
+</div>
+<p>We need an algorithm because the score equations are nonlinear in \(\boldsymbol\beta\).</p>
+<h3>9.3 Derive the gradient (score)</h3>
+<p>First note that \(\frac{d}{d\eta}\log(1+e^\eta)=\frac{e^\eta}{1+e^\eta}=\sigma(\eta)\). Writing the log-likelihood as a sum of a linear term and a nonlinear term,</p>
+\[
+\ell(\boldsymbol\beta)=\sum_{i=1}^{n}y_i\sum_{j}x_{ij}\beta_j
+-\sum_{i=1}^{n}\log\left(1+e^{\sum_j x_{ij}\beta_j}\right).
+\]
+<p>Differentiate with respect to any one coefficient \(\beta_j\):</p>
+\[
+\begin{aligned}
+\frac{\partial\ell}{\partial\beta_j}
+&=\sum_{i=1}^{n}y_ix_{ij}-\sum_{i=1}^{n}
+\frac{e^{\eta_i}}{1+e^{\eta_i}}x_{ij}\\
+&=\sum_{i=1}^{n}x_{ij}(y_i-p_i).
+\end{aligned}
+\]
+<p>Collecting the coordinate derivatives into a vector:</p>
+<div class="proposition"><div class="label">Logistic regression score</div>
+\[
+\boxed{\nabla\ell(\boldsymbol\beta)=X^\top(\mathbf y-\mathbf p),\qquad \mathbf p=\sigma(X\boldsymbol\beta).}
+\]
+This gives an immediate gradient-ascent update using only matrix multiplication and the sigmoid.</div>
+<h3>9.4 Hessian and concavity</h3>
+<p>Since \(\sigma'(\eta)=\sigma(\eta)[1-\sigma(\eta)]\), differentiating the score once more gives the individual Hessian entries</p>
+\[
+\frac{\partial^2\ell}{\partial\beta_j\partial\beta_k}
+=-\sum_{i=1}^{n}x_{ij}x_{ik}p_i(1-p_i).
+\]
+<p>Collect these terms into a matrix:</p>
+\[
+\boxed{\nabla^2\ell(\boldsymbol\beta)=-X^\top W X,\quad W=\operatorname{diag}\big(p_i(1-p_i)\big).}
+\]
+<p>For any vector \(\mathbf v\),</p>
+\[
+\mathbf v^\top\nabla^2\ell(\boldsymbol\beta)\mathbf v
+=-\sum_{i=1}^n p_i(1-p_i)(\mathbf x_i^\top\mathbf v)^2\le0.
+\]
+<p>Thus \(\ell\) is concave and the <em>negative</em> log-likelihood is convex. When the design has full column rank, the Hessian is negative definite at finite coefficients; however, complete separation can still prevent the existence of a finite MLE. In our interactive example the classes overlap, so the maximizer is finite.</p>
+<h3>9.5 Gradient ascent for logistic regression</h3>
+<div class="math-result">
+\[
+\boxed{\boldsymbol\beta_{k+1}=\boldsymbol\beta_k+t X^\top(\mathbf y-\mathbf p_k),\qquad \mathbf p_k=\sigma(X\boldsymbol\beta_k).}
+\]
+</div>
+<p>For the <strong>average log-likelihood</strong> used in the practical, the update becomes</p>
+\[
+\boxed{\boldsymbol\beta_{k+1}=\boldsymbol\beta_k+\frac{t}{n}X^\top(\mathbf y-\mathbf p_k).}
+\]
+<ol><li>Start at \(\boldsymbol\beta_0=\mathbf0\), so initially \(p_i=0.5\).</li><li>Choose \(t>0\).</li><li>Calculate probabilities, then the gradient.</li><li>Update the coefficients; repeat until convergence.</li></ol>
+<div class="callout note"><div class="label">Prediction and decision rule</div>
+After fitting, predict \(\widehat p=\sigma(\beta_0+\mathbf x^\top\beta)\). If the classification threshold is \(0.5\), predict class \(1\) when \(\widehat p\ge0.5\). At the decision boundary, class probabilities are equal:
+\[p=1-p \quad\Longrightarrow\quad p=0.5
+\quad\Longrightarrow\quad\beta_0+\mathbf x^\top\beta=0.\]
+This is a hyperplane: a direct connection to Lecture 4.</div>
+
+<h2 id="logistic-lab">10. Interactive Experiment C — Fit Logistic Regression</h2>
+<p>Watch gradient descent minimize the <strong>mean negative log-likelihood</strong> of a small, overlapping two-feature dataset. The blue and red points are labels \(1\) and \(0\); the decision boundary moves as the coefficients change. This is an intentionally small teaching dataset rather than the breast-cancer dataset used in your Python notebook.</p>
+<div class="interactive" id="logisticLab">
+<div class="widget-heading"><b>Logistic regression from scratch</b><span class="mini">Two features + intercept · average loss</span></div>
+<div class="controls">
+<label>Step size t<select id="lRate"><option value="0.1">0.1</option><option value="0.5" selected>0.5</option><option value="1">1.0</option><option value="2">2.0</option><option value="5">5.0</option><option value="10">10.0</option></select></label>
+<button id="lReset" class="ghost">Reset β = 0</button><button id="lStep">One iteration</button><button id="lRun" class="primary">Run 100 iterations</button>
+</div>
+<div class="metrics"><div><small>Average loss</small><b id="lLoss">0.6931</b></div><div><small>Gradient norm</small><b id="lGrad">—</b></div><div><small>Training accuracy</small><b id="lAcc">—</b></div><div><small>Iterations</small><b id="lIter">0</b></div></div>
+<div class="plot-grid"><div><canvas id="lBoundary" width="720" height="390" aria-label="Logistic regression labeled scatterplot and decision boundary"></canvas><div class="caption">Dashed line: current \(p=0.5\) decision boundary. The line changes as β is updated.</div></div><div><canvas id="lHistory" width="720" height="390" aria-label="Mean negative log likelihood as gradient descent proceeds"></canvas><div class="caption">Binary cross-entropy (mean negative log-likelihood) over iterations.</div></div></div>
+<p class="status" id="lStatus" aria-live="polite">β is initialized at zero. All probabilities initially equal 0.5.</p>
+<p class="small">Classroom caution: a larger learning rate does not automatically mean faster convergence. For some datasets a large learning rate causes the loss to oscillate or increase.</p>
+</div>
+
+<h2 id="python">11. Python Practical — The Uploaded Code Revisited</h2>
+<p>Your R script used a Cauchy likelihood with the three starts <strong>median, 7, and 19</strong>, and step sizes such as \(t=0.3\) and \(t=1\). The companion Python script reproduces the <em>algorithmic comparison</em> with NumPy, SciPy, and Matplotlib. It uses a fixed Cauchy teaching sample so that students reliably see multiple local optima.</p>
+<h3>11.1 The core Cauchy loop</h3>
+<pre class="code-sample"><code>def cauchy_score(mu, x):
+    z = x - mu
+    return np.sum(2.0 * z / (1.0 + z*z))
+
+mu = float(np.median(x))  # robust initial value
+t = 0.3
+for k in range(100):
+    next_mu = mu + t * cauchy_score(mu, x)
+    if abs(next_mu - mu) &lt; 1e-8:
+        mu = next_mu
+        break
+    mu = next_mu</code></pre>
+<h3>11.2 Logistic regression in NumPy</h3>
+<p>With \(\mathbf y\) stored as a one-dimensional array, a numerically stable sigmoid and objective produce a direct implementation:</p>
+<pre class="code-sample"><code>from scipy.special import expit
+
+beta = np.zeros(X.shape[1])  # X includes the intercept column
+for k in range(2500):
+    prob = expit(X @ beta)
+    grad = X.T @ (prob - y) / len(y)  # average negative log-lik. gradient
+    beta = beta - 0.2 * grad         # gradient descent</code></pre>
+<div class="callout warn"><div class="label">Correction to the uploaded scratch notebook</div>
+In the uploaded notebook, \(y\) is reshaped to \((n,1)\) while predictions are shape \((n,)\). In NumPy, operations such as <code>y - pred</code> then broadcast to an unintended \((n,n)\) array. For the corrected version, labels and predictions are both 1D. I also standardize the input features using <em>training-set-only</em> statistics, and use <code>scipy.special.expit</code> and <code>np.logaddexp</code> for numerical stability. Those are implementation corrections, not new statistical assumptions.</div>
+<div class="callout note"><div class="label">Comparing with scikit-learn</div>
+The companion script compares a from-scratch fit with <code>sklearn.linear_model.LogisticRegression</code>. Note that scikit-learn uses an L2 penalty by default, so the two fits do not optimize identical objectives unless their regularization settings are aligned. Accuracy alone is not a convergence criterion; also inspect the training loss and gradient norm.</div>
+<div class="code-actions"><button id="pyDownload" class="primary">Download complete Python examples (.py)</button><button id="pyCopy">Copy Python code</button><span class="mini" id="pyFeedback" aria-live="polite"></span></div>
+<details class="code-details"><summary>Show the full companion Python script</summary><pre id="pySource" class="python-full"></pre></details>
+
+<h2 id="summary">12. Summary, Limitations, and Exercises</h2>
+<table><thead><tr><th>Idea</th><th>What to remember</th></tr></thead><tbody>
+<tr><td>Gradient ascent</td><td>\(\theta_{k+1}=\theta_k+t\nabla f(\theta_k)\) maximizes \(f\) locally.</td></tr>
+<tr><td>Gradient descent</td><td>\(\theta_{k+1}=\theta_k-t\nabla F(\theta_k)\) minimizes \(F\) locally.</td></tr>
+<tr><td>Learning rate</td><td>Affects speed and stability; too large can cause overshooting.</td></tr>
+<tr><td>Cauchy location</td><td>A nonconcave likelihood can have several local maxima and be sensitive to initialization.</td></tr>
+<tr><td>Logistic regression</td><td>Bernoulli likelihood gives \(\nabla\ell=X^\top(y-p)\); gradient methods fit coefficients iteratively.</td></tr>
+<tr><td>Newton vs. gradient</td><td>Newton uses curvature/Hessian; gradient methods need only first derivatives.</td></tr>
+</tbody></table>
+<div class="summary"><h3 style="margin-top:0">One conceptual chain</h3>
+\[
+\boxed{\text{Likelihood}\;\longrightarrow\;\text{Gradient}\;\longrightarrow\;
+\text{Iterative updates}\;\longrightarrow\;\text{Step size}\;\longrightarrow\;\text{Fitting a model}}
+\]
+</div>
+<div class="exercise"><div class="label">Practice and discussion</div><ol>
+<li>Derive gradient ascent from the surrogate \(q_k(\theta)=f(\theta_k)+f'(\theta_k)(\theta-\theta_k)-\frac{1}{2t}(\theta-\theta_k)^2\).</li>
+<li>For \(F(x)=\frac12(x-1)^2\), prove from the recurrence that \(0&lt;t&lt;2\) is necessary and sufficient for convergence from any starting point.</li>
+<li>Explain why a poor starting point can produce a local rather than global solution in the Cauchy example.</li>
+<li>Derive \(\frac{\partial\ell}{\partial\beta_j}=\sum_i x_{ij}(y_i-p_i)\) for logistic regression.</li>
+<li>Show that \(-X^\top W X\) is negative semidefinite for \(W=\mathrm{diag}(p_i(1-p_i))\).</li>
+<li>In the Python script, vary the Cauchy step size and note when the likelihood ceases to improve at every step.</li>
+<li>In logistic regression, explain the difference between minimizing binary cross-entropy and maximizing Bernoulli log-likelihood.</li>
+<li>What makes a gradient-based method computationally more attractive than Newton's method in a very high-dimensional problem?</li>
+</ol></div>
+<div class="callout note"><div class="label">Next in the course</div>With gradient descent in place, we can next study <strong>step-size choice and stochastic gradient descent</strong>, followed later by proximal methods for nonsmooth penalties such as the \(\ell_1\)-norm.</div>
+
+
+</div>
+<script id="pythonText" type="text/plain">
+"""MATH-224 Lecture 7: Gradient Ascent / Descent.
+
+Python companion to the interactive HTML lecture.
+Requirements: numpy, scipy, matplotlib; scikit-learn for the optional final demo.
+
+The example values in the interactive HTML's Cauchy lab are deliberately fixed to
+show a multimodal likelihood. Python and R use different RNGs: identical integer
+seeds need not generate identical samples across languages.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import expit, logsumexp
+
+
+def gradient_descent_quadratic(x0=5.0, learning_rate=0.2, n_steps=30):
+    """Minimize f(x)=0.5*(x-1)^2 with f'(x)=x-1."""
+    x = float(x0)
+    path = [x]
+    for _ in range(n_steps):
+        x -= learning_rate * (x - 1.0)
+        path.append(x)
+        if abs(path[-1] - path[-2]) < 1e-10:
+            break
+    return np.asarray(path)
+
+
+def cauchy_loglik(mu, observations):
+    x = np.asarray(observations, dtype=float)
+    return -x.size * np.log(np.pi) - np.log1p((x - mu) ** 2).sum()
+
+
+def cauchy_score(mu, observations):
+    x = np.asarray(observations, dtype=float)
+    z = x - mu
+    return np.sum(2.0 * z / (1.0 + z * z))
+
+
+def gradient_ascent_cauchy(observations, start, step_size=0.3, max_iter=120, tol=1e-8):
+    """Use the exact (summed) log-likelihood score from the handwritten notes."""
+    mu = float(start)
+    path = [mu]
+    for _ in range(max_iter):
+        new_mu = mu + step_size * cauchy_score(mu, observations)
+        if not np.isfinite(new_mu):
+            break
+        path.append(new_mu)
+        if abs(new_mu - mu) < tol:
+            break
+        mu = new_mu
+    return np.asarray(path)
+
+
+def demo_cauchy():
+    # Fixed observations give two local likelihood maxima, a useful classroom example.
+    sample = np.array([3.4, 4.7, 5.5, 16.5])
+    grid = np.linspace(-8, 26, 700)
+    objective = np.array([cauchy_loglik(mu, sample) for mu in grid])
+    fig, ax = plt.subplots(figsize=(9, 4.5))
+    ax.plot(grid, objective, color='black', lw=2, label='Cauchy log-likelihood')
+    for start, rate, label in [
+        (float(np.median(sample)), 0.3, 'Median start, t=0.3'),
+        (7.0, 0.3, 'Start 7, t=0.3'),
+        (19.0, 0.3, 'Start 19, t=0.3'),
+        (7.0, 1.0, 'Start 7, t=1.0'),
+    ]:
+        path = gradient_ascent_cauchy(sample, start=start, step_size=rate)
+        shown = path[:min(len(path), 30)]
+        vals = [cauchy_loglik(mu, sample) for mu in shown]
+        ax.plot(shown, vals, '-o', ms=3.5, lw=1.4, label=f'{label}; final={path[-1]:.3f}')
+    ax.set(xlabel='Location parameter μ', ylabel='ℓ(μ)', title='Gradient ascent: Cauchy likelihood and starting values')
+    ax.legend(fontsize=8)
+    ax.grid(alpha=0.2)
+    fig.tight_layout()
+    return fig
+
+
+def binary_log_loss(beta, X, y):
+    """Mean negative Bernoulli log-likelihood; stable for large predictors."""
+    logits = X @ beta
+    return np.mean(np.logaddexp(0, logits) - y * logits)
+
+
+def fit_logistic_from_scratch(X, y, step_size=0.2, epochs=2500, tol=1e-9):
+    """Minimize mean binary cross-entropy by gradient descent.
+
+    X must already contain a column of ones if an intercept is wanted.
+    y has shape (n,), not (n,1), to avoid accidental broadcasting.
+    """
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float).reshape(-1)
+    n, p = X.shape
+    assert y.shape == (n,) and set(np.unique(y)).issubset({0.0, 1.0})
+    beta = np.zeros(p, dtype=float)
+    history = [binary_log_loss(beta, X, y)]
+    for _ in range(epochs):
+        prob = expit(X @ beta)
+        grad = X.T @ (prob - y) / n
+        new_beta = beta - step_size * grad
+        history.append(binary_log_loss(new_beta, X, y))
+        if np.linalg.norm(new_beta - beta) < tol:
+            beta = new_beta
+            break
+        beta = new_beta
+    return beta, np.asarray(history)
+
+
+def demo_logistic():
+    """From-scratch logistic regression on the dataset in the uploaded notebook.
+
+    Unlike the uploaded notebook, this consistently uses 1D labels and a stable
+    sigmoid, and standardizes features using training-set statistics only.
+    """
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score
+
+    dataset = load_breast_cancer()
+    X_tr, X_te, y_tr, y_te = train_test_split(
+        dataset.data, dataset.target, test_size=0.2, random_state=42, stratify=dataset.target
+    )
+    scaler = StandardScaler().fit(X_tr)
+    X_tr = scaler.transform(X_tr)
+    X_te = scaler.transform(X_te)
+    A_tr = np.column_stack([np.ones(X_tr.shape[0]), X_tr])
+    A_te = np.column_stack([np.ones(X_te.shape[0]), X_te])
+
+    beta, history = fit_logistic_from_scratch(A_tr, y_tr, step_size=0.2, epochs=3000)
+    probabilities = expit(A_te @ beta)
+    predictions = (probabilities >= 0.5).astype(int)
+    print('Gradient descent: steps', len(history)-1)
+    print('Gradient descent: final training loss', round(history[-1], 5))
+    print('Gradient descent: test accuracy', round(accuracy_score(y_te, predictions), 4))
+
+    baseline = LogisticRegression(max_iter=2000)  # regularized sklearn baseline
+    baseline.fit(X_tr, y_tr)
+    print('scikit-learn (regularized) test accuracy:',
+          round(accuracy_score(y_te, baseline.predict(X_te)), 4))
+    print('Note: sklearn uses L2 regularization by default; results are not identical objectives.')
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.plot(history)
+    ax.set(xlabel='Gradient-descent iteration', ylabel='Mean negative log-likelihood',
+           title='Logistic regression from scratch: training objective')
+    ax.grid(alpha=0.2)
+    fig.tight_layout()
+    return fig
+
+
+if __name__ == '__main__':
+    for rate in [0.2, 1.0, 2.2]:
+        path = gradient_descent_quadratic(5, rate, 12)
+        print(f'Quadratic descent, step={rate}:', np.round(path[:8], 3))
+    demo_cauchy()
+    try:
+        demo_logistic()
+    except ImportError:
+        print('Optional scikit-learn demo skipped: install scikit-learn.')
+    plt.show()
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const fmt = (v,d=3) => Number.isFinite(v) ? Number(v).toFixed(d) : '—';
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const range = (a,b,n)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+  function frame(canvas,{xmin,xmax,ymin,ymax},xlabel,ylabel){
+    const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+    const m={l:82,r:24,t:22,b:60}, pw=w-m.l-m.r,ph=h-m.t-m.b;
+    const sx=x=>m.l+(x-xmin)/(xmax-xmin)*pw, sy=y=>h-m.b-(y-ymin)/(ymax-ymin)*ph;
+    ctx.fillStyle='#f8fafc';ctx.fillRect(m.l,m.t,pw,ph);
+    ctx.font='14px Segoe UI, Arial';ctx.lineWidth=1;
+    for(let i=0;i<=5;i++){
+      let x=xmin+(xmax-xmin)*i/5, xx=sx(x);
+      ctx.strokeStyle='#e2e8f0';ctx.beginPath();ctx.moveTo(xx,m.t);ctx.lineTo(xx,h-m.b);ctx.stroke();
+      ctx.fillStyle='#64748b';ctx.textAlign='center';ctx.fillText(Math.abs(x)>100?x.toFixed(0):x.toFixed(1),xx,h-m.b+21);
+    }
+    for(let i=0;i<=4;i++){
+      let y=ymin+(ymax-ymin)*i/4, yy=sy(y);
+      ctx.strokeStyle='#e2e8f0';ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(w-m.r,yy);ctx.stroke();
+      ctx.fillStyle='#64748b';ctx.textAlign='right';ctx.fillText(Math.abs(y)>100?y.toFixed(0):y.toFixed(2),m.l-12,yy+5);
+    }
+    ctx.strokeStyle='#475569';ctx.lineWidth=1.4;ctx.strokeRect(m.l,m.t,pw,ph);
+    ctx.fillStyle='#334155';ctx.textAlign='center';ctx.font='16px Segoe UI, Arial';ctx.fillText(xlabel,m.l+pw/2,h-7);
+    ctx.save();ctx.translate(20,m.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(ylabel,0,0);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(m.l,m.t,pw,ph);ctx.clip();
+    return {ctx,sx,sy,m,pw,ph,done:()=>ctx.restore()};
+  }
+  function line(P,arr,color='#1d4ed8',width=2.5,dash=[]){
+    const {ctx,sx,sy}=P;let drawing=false;ctx.beginPath();
+    for (const [x,y] of arr){if(!Number.isFinite(x)||!Number.isFinite(y)){drawing=false;continue;}
+      if(!drawing){ctx.moveTo(sx(x),sy(y));drawing=true;}else ctx.lineTo(sx(x),sy(y));}
+    ctx.lineWidth=width;ctx.strokeStyle=color;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([]);
+  }
+  function point(P,x,y,color,r=6){if(!Number.isFinite(x)||!Number.isFinite(y))return;
+    const{ctx,sx,sy}=P;ctx.fillStyle=color;ctx.beginPath();ctx.arc(sx(x),sy(y),r,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.stroke();}
+  function vline(P,x,color){line(P,[[x,-1e6],[x,1e6]],color,2,[7,5]);}
+  function history(canvas,vals,ylab){
+    const max=Math.max(...vals.filter(Number.isFinite));const min=Math.min(...vals.filter(Number.isFinite));
+    const span=Math.max(0.03,max-min);
+    const lo=min-0.12*span, hi=max+0.12*span;
+    const P=frame(canvas,{xmin:0,xmax:Math.max(5,vals.length-1),ymin:lo,ymax:hi},'Iteration k',ylab);
+    line(P,vals.map((v,i)=>[i,v]),'#0f766e',2.7);vals.forEach((v,i)=>{if(i===0||i===vals.length-1||vals.length<=15)point(P,i,v,i===vals.length-1?'#dc2626':'#f59e0b',4.5)});
+    P.done();
+  }
+  // A: Basic quadratic gradient descent
+  const Qf=x=>0.5*(x-1)*(x-1),Qg=x=>x-1;
+  let q={path:[5]};
+  const qrate=()=>Number($('qRate').value);
+  function qreset(){const v=Number($('qStart').value); if(!Number.isFinite(v)||v<-8||v>10){$('qStatus').textContent='Choose an initial point between -8 and 10.';return;}
+    q={path:[v]};qdraw();}
+  function qstep(){if(q.path.length>61)return;let x=q.path[q.path.length-1],t=qrate();q.path.push(x-t*Qg(x));qdraw();}
+  function qdraw(){const t=qrate();$('qRateValue').textContent=fmt(t,1);const x=q.path.at(-1);$('qCurrent').textContent=fmt(x);$('qLoss').textContent=fmt(Qf(x));$('qGrad').textContent=fmt(Qg(x));$('qIter').textContent=q.path.length-1;
+    const loc=Math.max(7,...q.path.map(v=>Math.abs(v-1)+2)),lim=clamp(loc,7,20);
+    const Ymax=0.5*(lim+1)**2;
+    const P=frame($('qPlot'),{xmin:1-lim,xmax:1+lim,ymin:0,ymax:Ymax},'x','F(x)');
+    line(P,range(1-lim,1+lim,350).map(v=>[v,Qf(v)]),'#1d4ed8',3.3);vline(P,1,'#15803d');
+    line(P,q.path.map(v=>[v,Qf(v)]),'#f59e0b',1.8);q.path.forEach((v,i)=>point(P,v,Qf(v),i===q.path.length-1?'#b91c1c':'#f59e0b',i===q.path.length-1?6:4));P.done();
+    history($('qHistory'),q.path.map(Qf),'F(xₖ)');
+    let explanation=t<1?'Small steps approach the minimum without oscillation.':t===1?'For this quadratic, t=1 reaches the minimizer in one step.':t<2?'Oscillatory but convergent: steps alternate across x*=1.':t===2?'At t=2 the iterates normally oscillate without converging.':'The step exceeds 2: the iterates diverge (out-of-range points are clipped on the plot).';
+    $('qStatus').textContent=`${explanation}  Error |x−1| = ${fmt(Math.abs(x-1),5)}.`;
+  }
+  $('qReset').addEventListener('click',qreset);$('qStep').addEventListener('click',qstep);$('qRun').addEventListener('click',()=>{for(let i=0;i<18&&q.path.length<=61;i++)qstep();});$('qRate').addEventListener('input',qreset);qreset();
+
+  // B: Cauchy likelihood: fixed illustrative dataset to make multiple peaks reproducible.
+  const CX=[3.4,4.7,5.5,16.5];
+  const cll=mu=>-CX.length*Math.log(Math.PI)-CX.reduce((acc,x)=>acc+Math.log1p((x-mu)**2),0);
+  const cscore=mu=>CX.reduce((acc,x)=>acc+2*(x-mu)/(1+(x-mu)**2),0);
+  let c={path:[5.1]};
+  function cstart(){const choice=$('cChoice').value;if(choice==='median')return (CX[1]+CX[2])/2;if(choice==='custom')return Number($('cCustom').value);return Number(choice);}
+  function creset(){let mu=cstart();if(!Number.isFinite(mu)||mu<-30||mu>40){$('cStatus').textContent='Choose a finite starting value between −30 and 40.';return;} c={path:[mu]};cdraw();}
+  function cstep(){if(c.path.length>151)return;let a=c.path.at(-1);let b=a+Number($('cRate').value)*cscore(a);if(!Number.isFinite(b)||Math.abs(b)>1e5){$('cStatus').textContent='Iteration left the plotted numerical range.';return;}c.path.push(b);cdraw();}
+  const cgrid=range(-10,30,400),cvals=cgrid.map(cll),cmax=Math.max(...cvals),cmin=Math.min(...cvals);
+  function cdraw(){let mu=c.path.at(-1);$('cCurrent').textContent=fmt(mu,4);$('cLoss').textContent=fmt(cll(mu),4);$('cScore').textContent=fmt(cscore(mu),4);$('cIter').textContent=c.path.length-1;
+    const P=frame($('cPlot'),{xmin:-10,xmax:30,ymin:cmin-1,ymax:cmax+1},'μ','ℓ(μ)');line(P,cgrid.map(v=>[v,cll(v)]),'#111827',3);
+    line(P,c.path.map(v=>[v,cll(v)]),'#f97316',2.5);
+    c.path.forEach((v,i)=>point(P,v,cll(v),i===c.path.length-1?'#dc2626':'#2563eb',i===c.path.length-1?6:4));P.done();
+    history($('cHistory'),c.path.map(cll),'ℓ(μₖ)');
+    const nonmono=c.path.some((v,i)=>i>0 && cll(v)+1e-9<cll(c.path[i-1]));
+    let msg=nonmono?'Some steps reduced the log-likelihood: this step size is too aggressive here.':'So far the log-likelihood has not decreased along the path.';
+    if(c.path.length>1 && Math.abs(c.path.at(-1)-c.path.at(-2))<1e-6)msg+=' The iterate has nearly stabilized; check whether this is the global peak.';
+    $('cStatus').textContent=msg+' Compare the highest black-curve peak near μ≈4.78 with any local peak near μ≈16.22.';
+  }
+  ['cChoice','cRate','cCustom'].forEach(id=>$(id).addEventListener('change',creset));$('cReset').addEventListener('click',creset);$('cStep').addEventListener('click',cstep);
+  $('cRun').addEventListener('click',()=>{for(let i=0;i<40&&c.path.length<=151;i++)cstep();});creset();
+
+  // C: overlapping 2D synthetic classification data, intentionally not separable.
+  const pos=[[1,1.8],[2,1.5],[-.2,1.4],[1.5,.4],[2.1,-.2],[.5,.9],[.1,1.2],[1.3,1.2],[-.4,.8],[.8,-.5],[1.8,.5],[0,0]];
+  const neg=[[-1,-1],[-2,-1.7],[-.8,-1.9],[-1.7,.3],[-.3,-.7],[-2,.6],[.4,-1],[-1.5,-.5],[.4,.5],[-.6,.5],[.8,-1.5],[1.2,.2]];
+  const data=[...pos.map(p=>({x:p,y:1})),...neg.map(p=>({x:p,y:0}))];
+  const sigmoid=z=>z>=0?1/(1+Math.exp(-z)):Math.exp(z)/(1+Math.exp(z));
+  const log1pexp=z=>z>0?z+Math.log1p(Math.exp(-z)):Math.log1p(Math.exp(z));
+  const prob=(b,p)=>sigmoid(b[0]+b[1]*p[0]+b[2]*p[1]);
+  const lobj=b=>data.reduce((s,d)=>{let z=b[0]+b[1]*d.x[0]+b[2]*d.x[1];return s+log1pexp(z)-d.y*z;},0)/data.length;
+  const lgrad=b=>{let g=[0,0,0];for(const d of data){let delta=prob(b,d.x)-d.y;g[0]+=delta;g[1]+=delta*d.x[0];g[2]+=delta*d.x[1];}return g.map(v=>v/data.length);};
+  let l={beta:[0,0,0],history:[Math.log(2)],iter:0};
+  function lreset(){l={beta:[0,0,0],history:[Math.log(2)],iter:0};ldraw();}
+  function lstep(){if(l.iter>=1000)return;let t=Number($('lRate').value),g=lgrad(l.beta);l.beta=l.beta.map((v,i)=>v-t*g[i]);l.iter++;l.history.push(lobj(l.beta));ldraw();}
+  function ldraw(){let b=l.beta,loss=lobj(b),g=lgrad(b),norm=Math.hypot(...g),acc=data.filter(d=>(prob(b,d.x)>=.5?1:0)===d.y).length/data.length;
+    $('lLoss').textContent=fmt(loss,5);$('lGrad').textContent=fmt(norm,5);$('lAcc').textContent=fmt(100*acc,1)+'%';$('lIter').textContent=l.iter;
+    const P=frame($('lBoundary'),{xmin:-2.7,xmax:2.7,ymin:-2.7,ymax:2.7},'Feature x₁','Feature x₂');
+    if(Math.hypot(b[1],b[2])>1e-7){
+      let candidates=[];
+      if(Math.abs(b[2])>1e-8){candidates=[[-2.7,(-b[0]-b[1]*-2.7)/b[2]],[2.7,(-b[0]-b[1]*2.7)/b[2]]];}
+      else if(Math.abs(b[1])>1e-8){const xx=-b[0]/b[1];candidates=[[xx,-2.7],[xx,2.7]];}
+      if(candidates.length)line(P,candidates,'#475569',3,[7,5]);
+    }
+    for(const d of data)point(P,d.x[0],d.x[1],d.y?'#2563eb':'#dc2626',6);
+    P.done(); history($('lHistory'),l.history,'Mean NLL');
+    const bad=l.history.some((v,i)=>i>0&&v>l.history[i-1]+1e-8);
+    $('lStatus').textContent=`β = (${b.map(v=>fmt(v,3)).join(', ')}); gradient norm ${fmt(norm,5)}. ${bad?'Some iterations increased the loss.':'Loss has been nonincreasing.'} Blue = class 1; red = class 0.`;
+  }
+  $('lReset').addEventListener('click',lreset);$('lStep').addEventListener('click',lstep);$('lRun').addEventListener('click',()=>{for(let i=0;i<100 && l.iter<1000;i++){let t=Number($('lRate').value),g=lgrad(l.beta);l.beta=l.beta.map((v,j)=>v-t*g[j]);l.iter++;l.history.push(lobj(l.beta));}ldraw();});$('lRate').addEventListener('change',lreset);lreset();
+
+  // Python companion code travels *inside* this HTML for standalone sharing.
+  const py=$('pythonText')?.textContent || '';
+  if($('pySource'))$('pySource').textContent=py;
+  $('pyDownload')?.addEventListener('click',()=>{
+    const blob=new Blob([py],{type:'text/x-python;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='MATH224_Lecture7_Gradient_Methods_Python.py';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    $('pyFeedback').textContent='Python script prepared for download.';
+  });
+  $('pyCopy')?.addEventListener('click',async()=>{
+    try {if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(py);
+      else{let ta=document.createElement('textarea');ta.value=py;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+      $('pyFeedback').textContent='Python code copied.';
+    }catch(e){$('pyFeedback').textContent='Select the full script below to copy manually.';}
+  });
+})();
+
+</script>
+</body>
+</html>
